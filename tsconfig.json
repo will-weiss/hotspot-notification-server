@@ -1,0 +1,23 @@
+{
+  "version": "2.2.1",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "compiled",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "es6",
+    "lib": [
+      "es6",
+      "esnext.asynciterable",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
