@@ -14,30 +14,32 @@ Case & Location Trail Creation/Review -> Infection Risk Calculation -> Hotspot D
 
 ### Tables
 
-health_authority
-  - info
+health_authority_info_field
+  - key
+  - value
 
-health_authority_staff
-  - username
-  - password
-  - name
-  - contact_info
+roles
   - role
 
-health_authority_roles
-  - role
-
-health_authority_role_permissions
-  - health_authority_role_id
+permissions
+  - role_id
   - method
   - route
+
+staff
+  - username
+  - password
+  - role_id
+  - contact_info
 
 auth_codes?
   - code
 
 cases
-  - patient_record_information
+  - created_by_staff
+  - patient_record_info
   - infection_risk
+  - redacted
 
 location_trail_points
   - case_id
@@ -72,14 +74,14 @@ past_hotspots?
 
 - `POST`   `/session`
 - `DELETE` `/session`
-- `GET`    `/health_authority/info`
-- `PUT`    `/health_authority/info`
-- `GET`    `/health_authority/staff`
-- `POST`   `/health_authority/staff`
-- `PUT`    `/health_authority/staff/$health_authority_staff_id`
-- `DELETE` `/health_authority/staff/$health_authority_staff_id`
-- `GET`    `/health_authority/settings`
-- `PUT`    `/health_authority/settings/$setting_id`
+- `GET`    `/health_authority_info`
+- `PUT`    `/health_authority_info`
+- `GET`    `/staff`
+- `POST`   `/staff`
+- `PUT`    `/staff/$health_authority_staff_id`
+- `DELETE` `/staff/$health_authority_staff_id`
+- `GET`    `/settings`
+- `PUT`    `/settings/$setting_id`
 - `POST`   `/authcode/create` (mobile number)
 - `POST`   `/cases` { auth_code?, location_trail_points, patient_record_information }
 - `GET`    `/cases` ?page=pageId -> { case_id, location_trail_points, patient_record_information }[]
@@ -98,8 +100,8 @@ past_hotspots?
 Commit order
 - base db migrations
 - express app skeleton
-- /session
 - /cases (sans auth code)
+- /session
 - hotspot calculation
 - authcode workflow
 - Self Reporting
