@@ -1,8 +1,11 @@
 import { IRouterContext, IMiddleware } from 'koa-router'
+import db from './db'
 
 
-export async function createSession() {
 
+export async function createSession(ctx: IRouterContext) {
+  console.log('hee')
+  return Object.assign(ctx.response, { status: 200, body: { yes: 'please' } })
 }
 
 export async function delSession() {

@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test'
+
 require('sinon-as-promised')
 
 require('chai')

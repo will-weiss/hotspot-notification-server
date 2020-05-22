@@ -7,6 +7,7 @@ exports.up = async knex => {
     table.string('password').notNull()
     table.integer('role_id').notNull()
     table.json('contact_info')
+    table.unique('username')
     table.foreign('role_id').references('roles.id')
     table.timestamp('updated_at').defaultTo(knex.fn.now())
     table.timestamp('created_at').defaultTo(knex.fn.now())

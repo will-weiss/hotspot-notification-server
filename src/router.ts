@@ -1,15 +1,15 @@
 import * as Router from 'koa-router'
-import * as middleware from './middleware'
+import { bodyMustInclude } from './middleware'
 import * as handlers from './handlers'
 
 
 const v1Router = new Router()
-  .post('/session', handlers.createSession)
+  .post('/session', bodyMustInclude('username', 'string'), bodyMustInclude('password', 'string'), handlers.createSession)
   .del('/session', handlers.delSession)
   .get('/health_authority_info', handlers.getHealthAuthorityInfo)
-  .put('/health_authority_info', handlers.putHealthAuthorityInfo)
+  .put('/health_authority_info/$key', handlers.putHealthAuthorityInfo)
   .get('/staff', handlers.getStaff)
-  .post('/staff', handlers.postStaff)
+  .post('/staff', bodyMustInclude('username', 'string'), bodyMustInclude('password', 'string'), bodyMustInclude('role', 'string'), handlers.postStaff)
   .put('/staff/$health_authority_staff_id', handlers.putStaff)
   .del('/staff/$health_authority_staff_id', handlers.delStaff)
   .get('/settings', handlers.getSettings)
@@ -30,6 +30,6 @@ const v1Router = new Router()
 const router = new Router()
   .get(`/health-check`, ({ response }) => Object.assign(response, { status: 200, body: 'OK' }))
   .redirect('/', '/docs.html')
-  .use('/v1', v1Router.routes(), v1Router.allowedMethods())
+  .use('/v1',  v1Router.routes(), v1Router.allowedMethods())
 
 export default router
