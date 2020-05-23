@@ -10,14 +10,14 @@ steps:
   args: ['push', 'gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}']
 
 - name: 'gcr.io/cloud-builders/kubectl'
-- args:
+  args:
   - 'set'
   - 'image'
   - 'deployment/${_DEPLOYMENTNAME}'
   - '${_DEPLOYMENTNAME}=gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}'
-- env:
-  'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
-  'CLOUDSDK_CONTAINER_CLUSTER=${_CKE_CLUSTER}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_CKE_CLUSTER}'
 
 substitutions:
   _PROJECT: hotspot-notification-server
