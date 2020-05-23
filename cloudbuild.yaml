@@ -25,8 +25,11 @@ substitutions:
   _GKE_CLUSTER: cluster-1
 
   _DEPLOYMENTNAME: hotspot-notification-server
+  _CONTAINERNAME: hotspot-notification-server
   _GH_OWNER: will-weiss
   _GH_REPO: hotspot-notification-server
+
+  _VERSION: v1.0
 
 options:
   substitution_option: 'ALLOW_LOOSE'
