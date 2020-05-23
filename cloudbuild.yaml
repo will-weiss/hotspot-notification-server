@@ -1,7 +1,7 @@
 steps:
 
 - name: 'gcr.io/cloud-builders/git'
-  args: ['clone', 'https://github.com/will-weiss/hotspot-notification-server']
+  args: ['clone', 'https://github.com/${_GH_OWNER}/${_GH_REPO}']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}', '.']
@@ -14,3 +14,19 @@ steps:
   - 'set'
   - 'image'
   - 'deployment/${_DEPLOYMENTNAME}'
+  - '${_DEPLOYMENTNAME}=gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}'
+- env:
+  'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  'CLOUDSDK_CONTAINER_CLUSTER=${_CKE_CLUSTER}'
+
+substitutions:
+  _PROJECT: hotspot-notification-server
+  _ZONE: us-east-1
+  _GKE_CLUSTER: cluster-1
+
+  _DEPLOYMENTNAME: hotspot-notification-server
+  _GH_OWNER: will-weiss
+  _GH_REPO: hotspot-notification-server
+
+options:
+  substitution_option: 'ALLOW_LOOSE'
