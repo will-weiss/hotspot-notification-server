@@ -1,23 +1,12 @@
 // tslint:disable:no-let
 // tslint:disable:no-expression-statement
-import { first } from 'lodash'
+
 import { expect } from 'chai'
 import * as request from 'supertest'
 import * as permissions from '../permissions'
 import db from '../db'
 import server from '../server'
 const { seed } = require('../../db/seeds/two_role_three_user')
-
-
-const dropAll = () =>
-  db.raw(`
-    delete from location_trail_points;
-    delete from cases;
-    delete from permissions;
-    delete from staff;
-    delete from roles;
-    delete from health_authority_info_field;
-  `)
 
 
 describe('the whole shebang', () => {

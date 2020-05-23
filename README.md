@@ -100,15 +100,16 @@ past_hotspots?
 Commit order
 - base db migrations ✅
 - koa app skeleton  ✅
-- /cases (sans auth code)  ✅
+- /cases (sans auth code) ✅
 - /session ✅
-- CI/CD
-- Install
+- deploy ✅
 - Fill in some gaps
 - doc update
+- CI/CD
+- Install
 - hotspot calculation
 - authcode workflow
-- Self Reporting
+- Self Reporting?
 - Device Attestation
 - Cleanup old location points
 
