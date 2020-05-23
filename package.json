@@ -6,6 +6,7 @@
     "dev": "npm run clean && npm run compile && { npm run compile:watch &\n NODE_ENV=dev nodemon &\n wait\n }",
     "lint": "{ find src -name '*.ts' | xargs tslint --project tsconfig.json --config tslint.json ; }",
     "knex": "knex -- \"$@\"",
+    "postinstall": "npm run compile",
     "coverage": "npm run clean && npm run compile && istanbul cover -x '**/*.test.js*' -x '**/__test__/**/*.*' -x '**/entry.js' _mocha --root compiled --include-all-sources true -- --timeout 5000 --require test_setup.js 'compiled/**/*.test.js' && remap-istanbul -i coverage/coverage.json -o html-report -t html",
     "start": "node compiled/entry.js",
     "test": "npm run clean && npm run compile && mocha --timeout 20000 --require source-map-support/register --require test_setup.js 'compiled/**/*.test.js'",
