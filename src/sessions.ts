@@ -2,6 +2,7 @@ import { first } from 'lodash'
 import { IRouterContext } from 'koa-router'
 import * as uuid from 'node-uuid'
 import db from './db'
+import * as staff from './staff'
 
 
 type StaffMemberOutgoingPayload = {
@@ -48,11 +49,7 @@ function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string> {
 async function getAssociatedStaffMemberFromSessionKey(sessionKey: string): Promise<Maybe<StaffMemberOutgoingPayload>> {
   const staffMemberId = await store.get(sessionKey)
   return staffMemberId && first(
-    await db
-      .from('staff')
-      .select('staff.id', 'staff.username', 'roles.role')
-      .join('roles', { 'staff.role_id': 'roles.id' })
-      .where('staff.id', staffMemberId as any)
+    await staff.staffWithRoles().where('staff.id', staffMemberId)
   )
 }
 

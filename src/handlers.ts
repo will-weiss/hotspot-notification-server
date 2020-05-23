@@ -3,6 +3,7 @@ import * as passwords from './passwords'
 import db from './db'
 import * as sessions from './sessions'
 import * as cases from './cases'
+import * as staff from './staff'
 
 
 const fromBody = (ctx: IRouterContext, fieldName: string, type: 'string' | 'number' | 'boolean') => {
@@ -48,7 +49,10 @@ export async function putHealthAuthorityInfo(ctx: IRouterContext): Promise<any> 
 }
 
 export async function getStaff(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  return Object.assign(ctx.response, {
+    status: 200,
+    body: await staff.staffWithRoles().select('staff.created_at', 'staff.updated_at')
+  })
 }
 
 export async function postStaff(ctx: IRouterContext): Promise<any> {
