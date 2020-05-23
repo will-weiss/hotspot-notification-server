@@ -1,15 +1,24 @@
 import { IMiddleware, IRouterContext } from 'koa-router'
+import * as sessions from './sessions'
 
 
 // TODO
-export const attachSession: IMiddleware = (
-  async ({ request, response }: IRouterContext, next) => {
-    await next()
+export const attachStaffMemberFromSession: IMiddleware = (
+  async (ctx: IRouterContext, next) => {
+    const sessionKey = sessions.extractSessionKeyFromCookie(ctx.request.headers.cookie)
+    const associatedStaffMember = sessionKey && await sessions.getAssociatedStaffMember(sessionKey)
+
+    if (associatedStaffMember) {
+      Object.assign(ctx, { associatedStaffMember })
+    }
+
+    return next()  
   }
 )
 
 export const verifyPermissions: IMiddleware = (
-  async ({ request, response }: IRouterContext, next) => {
+  async (ctx: IRouterContext, next) => {
+    console.log('verifyPermissions', (ctx as any).associatedStaffMember)
     await next()
   }
 )

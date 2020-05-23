@@ -8,6 +8,15 @@ let permissions: {
   }[]
 }
 
+let permissionsReadIntoMemory
+let permissionsNotReadIntoMemory
+const readingPermissionsIntoMemory = new Promise((resolve, reject) => {
+  permissionsReadIntoMemory = resolve
+  permissionsNotReadIntoMemory = reject
+})
+
+
+
 
 export async function setPermissions() {
   const permissionRows = await db('permissions').select('*')
@@ -15,6 +24,6 @@ export async function setPermissions() {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-
+  
 }
 

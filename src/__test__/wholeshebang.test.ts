@@ -89,14 +89,17 @@ describe('the whole shebang', () => {
   it('200s when POST to /session has correct username and password', done => {
     contactTracerAgent
       .post('/v1/session')
-      .send({ username: 'contact_tracer', password: 'deadbeefdeadbeefdeadbeef' })
-      .expect(404)
+      .send({ username: 'contact_tracer_1', password: 'deadbeefdeadbeefdeadbeef' })
+      .expect(200)
+      .expect(res => {
+        expect(res.header).to.have.property('set-cookie')
+      })
       .end(done)
   })
 
   it('403s when a not logged in staff member attempts to POST to /cases', done => {
     notLoggedInAgent
-      .post('/cases')
+      .post('/v1/cases')
       .send({ 
         patient_record_info: { some: 'metadata' },
         location_trail_points: [
@@ -119,8 +122,8 @@ describe('the whole shebang', () => {
   })
 
   it('200s and adds a case on a POST /cases from a logged in staff member with permission', async () => {
-    const response = await notLoggedInAgent
-      .post('/cases')
+    const response = await contactTracerAgent
+      .post('/v1/cases')
       .send({ 
         patient_record_info: { some: 'metadata' },
         location_trail_points: [

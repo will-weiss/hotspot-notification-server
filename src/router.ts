@@ -30,6 +30,6 @@ const v1Router = new Router()
 const router = new Router()
   .get(`/health-check`, ({ response }) => Object.assign(response, { status: 200, body: 'OK' }))
   .redirect('/', '/docs.html')
-  .use('/v1', middleware.attachSession, middleware.verifyPermissions, v1Router.routes(), v1Router.allowedMethods())
+  .use('/v1', middleware.attachStaffMemberFromSession, middleware.verifyPermissions, v1Router.routes(), v1Router.allowedMethods())
 
 export default router
