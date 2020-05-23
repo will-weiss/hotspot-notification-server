@@ -103,20 +103,20 @@ describe('the whole shebang', () => {
   it('403s when a not logged in staff member attempts to POST to /cases', done => {
     notLoggedInAgent
       .post('/v1/cases')
-      .send({ 
+      .send({
         patient_record_info: { some: 'metadata' },
         location_trail_points: [
           {
             lat: 39.943436,
             lon: -76.993565,
-            start_ts: moment('2020-05-05T00:00:00').format('x'),
-            end_ts: moment('2020-05-05T00:05:00').format('x'),
+            start_ts: moment('2020-05-05T00:00:00').toISOString(),
+            end_ts: moment('2020-05-05T00:05:00').toISOString(),
           },
           {
             lat: 39.940623,
             lon: -76.992139,
-            start_ts: moment('2020-05-05T00:05:00').format('x'),
-            end_ts: moment('2020-05-05T00:10:00').format('x'),
+            start_ts: moment('2020-05-05T00:05:00').toISOString(),
+            end_ts: moment('2020-05-05T00:10:00').toISOString(),
           },
         ]
       })
@@ -133,19 +133,34 @@ describe('the whole shebang', () => {
           {
             lat: 39.943436,
             lon: -76.993565,
-            start_ts: moment('2020-05-05T00:00:00').format('x'),
-            end_ts: moment('2020-05-05T00:05:00').format('x'),
+            start_ts: moment('2020-05-05T00:00:00').toISOString(),
+            end_ts: moment('2020-05-05T00:05:00').toISOString(),
           },
           {
             lat: 39.940623,
             lon: -76.992139,
-            start_ts: moment('2020-05-05T00:05:00').format('x'),
-            end_ts: moment('2020-05-05T00:10:00').format('x'),
+            start_ts: moment('2020-05-05T00:05:00').toISOString(),
+            end_ts: moment('2020-05-05T00:10:00').toISOString(),
           },
         ]
       })
       .expect(200)
 
-    console.log(response.body)
+    const covidCase = response.body
+
+    expect(covidCase.id).to.be.a('number')
+
+    const location_trail_points = await db('location_trail_points').select('*').where({ case_id: covidCase.id })
+
+    expect(location_trail_points).to.have.length(2)
+  
+    const { rows } = await db.raw(`
+      select ST_Distance(
+        (select location from location_trail_points where id = ${location_trail_points[0].id}),
+        (select location from location_trail_points where id = ${location_trail_points[1].id})
+      )
+    `)
+
+    expect(rows[0].st_distance).to.equal(174.18927812)
   })
 })

@@ -8,7 +8,9 @@ exports.up = async knex => {
       location GEOGRAPHY(POINT,4326),
       start_ts timestamp with time zone,
       end_ts timestamp with time zone,
-      redacted BOOL DEFAULT FALSE
+      redacted BOOL DEFAULT FALSE,
+      updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NULL,
+      created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NULL
     );
   `)
 
