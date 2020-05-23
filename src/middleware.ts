@@ -10,10 +10,10 @@ export const attachStaffMemberFromSession: IMiddleware = (
     const associatedStaffMember = sessionKey && await sessions.getAssociatedStaffMember(sessionKey)
 
     if (associatedStaffMember) {
-      Object.assign(ctx, { associatedStaffMember })
+      Object.assign(ctx, { associatedStaffMember }) // tslint:disable-line:no-expression-statement
     }
 
-    return next()  
+    return next()
   }
 )
 
@@ -22,9 +22,7 @@ export const verifyPermissions: IMiddleware = (
     const role = (ctx as any).associatedStaffMember?.role
     const isPermitted = permissions.checkPermissions(role, ctx.method, ctx.path)
     if (isPermitted) return next()
-    Object.assign(ctx.response, { status: 403 })
-
-    
+    return Object.assign(ctx.response, { status: 403 })
   }
 )
 

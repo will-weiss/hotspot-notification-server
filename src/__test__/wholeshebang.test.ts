@@ -1,5 +1,6 @@
+// tslint:disable:no-let
+// tslint:disable:no-expression-statement
 import { first } from 'lodash'
-import * as moment from 'moment'
 import { expect } from 'chai'
 import * as request from 'supertest'
 import * as passwords from '../passwords'
@@ -45,10 +46,10 @@ describe('the whole shebang', () => {
     await permissions.readPermissionsIntoMemory()
 
     // Add a contact tracer with an encrypted password
-    await db('staff').insert({ 
+    await db('staff').insert({
       username: 'contact_tracer_1',
       hashed_password: await passwords.encrypt('deadbeefdeadbeefdeadbeef'),
-      role_id: contact_tracer_role_id 
+      role_id: contact_tracer_role_id
     })
   })
 
@@ -155,7 +156,7 @@ describe('the whole shebang', () => {
     const location_trail_points = await db('location_trail_points').select('*').where({ case_id: createdCovidCaseId })
 
     expect(location_trail_points).to.have.length(2)
-  
+
     const { rows } = await db.raw(`
       select ST_Distance(
         (select location::geometry from location_trail_points where id = ${location_trail_points[0].id}),
@@ -163,13 +164,12 @@ describe('the whole shebang', () => {
       )
     `)
 
-    
     expect(rows[0].st_distance).to.equal(0.0031537985033931537)
   })
 
   it('200s and returns the case and its location points in lat/lon format on a GET to /cases/$case_id', async () => {
     console.log('createdCovidCaseId', createdCovidCaseId)
-    
+
     return contactTracerAgent
       .get(`/v1/cases/${createdCovidCaseId}`)
       .expect(200, {

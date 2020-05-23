@@ -1,5 +1,4 @@
 import * as Koa from 'koa'
-import * as Router from 'koa-router'
 import bodyParser = require('koa-body')
 const cookieParser = require('koa-cookie')
 // const staticAssets = require('koa-static-server')

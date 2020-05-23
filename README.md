@@ -98,10 +98,14 @@ past_hotspots?
 <!-- Cleanup old location points? -->
 
 Commit order
-- base db migrations
-- express app skeleton
-- /cases (sans auth code)
-- /session
+- base db migrations ✅
+- koa app skeleton  ✅
+- /cases (sans auth code)  ✅
+- /session ✅
+- CI/CD
+- Install
+- Fill in some gaps
+- doc update
 - hotspot calculation
 - authcode workflow
 - Self Reporting
