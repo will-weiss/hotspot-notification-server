@@ -32,3 +32,21 @@ export async function insertStaff(username: string, password: string, role: stri
   }
 }
 
+export async function delStaff(id: number, role: string): Promise<boolean> {
+  const result = await db.raw(`
+    with role_id_of_matching_role as (
+      select id as role_id
+        from roles
+       where role = ?
+    )
+
+    delete from staff
+          where id = ?
+            and role_id = (
+              select role_id from role_id_of_matching_role
+            )
+  `, [role, id])
+
+  return Boolean(result.rowCount)
+}
+

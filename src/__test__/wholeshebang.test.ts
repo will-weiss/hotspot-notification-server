@@ -193,11 +193,13 @@ describe('the whole shebang', () => {
       expect(contact_tracer_2).to.be.an('object').that.has.all.keys('id', 'username', 'role', 'created_at', 'updated_at')
     })
 
+    let createdContactTracerId: number
+
     it('200s for POST to /staff when all fields present', async () => {
       const response = await (
         adminAgent
-          .post(`/v1/staff`)
-          .send({ username: 'new_user', password: 'okyesverynice', role: 'contact_tracer' })
+          .post(`/v1/staff/contact_tracer`)
+          .send({ username: 'new_user', password: 'okyesverynice' })
           .expect(200)
       )
 
@@ -205,18 +207,40 @@ describe('the whole shebang', () => {
       expect(response.body.id).to.be.a('number')
       expect(response.body.username).to.equal('new_user')
       expect(response.body.role).to.equal('contact_tracer')
+
+      createdContactTracerId = response.body.id
     })
 
-    it('400s for POST to /staff when role does not exist', done => {
-      adminAgent
-        .post(`/v1/staff`)
-        .send({ username: 'new_user_nope', password: 'okyesverynice', role: 'plumber' })
-        .expect(400, 'role (plumber) does not exist')
-        .end(done)
+    it('404s for DELETE to /staff/:role/:staff_id when staff id is of a different role', async () => {
+      await adminAgent
+        .del(`/v1/staff/admin/${createdContactTracerId}`)
+        .expect(404)
+
+      const [staffMemberStillPresent] = await db('staff').select('*').where('id', createdContactTracerId)
+      expect(staffMemberStillPresent).to.be.an('object')
     })
 
-    it('200s for a case deletion', () => {
+    it('200s for DELETE to /staff/:role/:staff_id when the staff member with that id has that role', async () => {
+      await (
+        adminAgent
+          .del(`/v1/staff/contact_tracer/${createdContactTracerId}`)
+          .expect(200)
+      )
 
+      const [staffMemberNoLongerPresent] = await db('staff').select('*').where('id', createdContactTracerId)
+      expect(staffMemberNoLongerPresent).to.equal(undefined)
     })
+
+    // it('400s for POST to /staff/:role when role does not exist', done => {
+    //   adminAgent
+    //     .post(`/v1/staff/plumber`)
+    //     .send({ username: 'new_user_nope', password: 'okyesverynice' })
+    //     .expect(400, 'role (plumber) does not exist')
+    //     .end(done)
+    // })
+
+    // it('200s for a case deletion', () => {
+
+    // })
   })
 })

@@ -58,16 +58,20 @@ export async function putHealthAuthorityInfo(ctx: IRouterContext): Promise<any> 
 }
 
 export async function getStaff(ctx: IRouterContext): Promise<any> {
+  const { role } = ctx.params
+  let query = staff.staffWithRoles().select('staff.created_at', 'staff.updated_at') // tslint:disable-line:no-let
+  if (role) query = query.where('role', role) // tslint:disable-line:no-expression-statement
+
   return Object.assign(ctx.response, {
     status: 200,
-    body: await staff.staffWithRoles().select('staff.created_at', 'staff.updated_at')
+    body: await query
   })
 }
 
 export async function postStaff(ctx: IRouterContext): Promise<any> {
   const username: string = fromBody(ctx, 'username', 'string')
   const password: string = fromBody(ctx, 'password', 'string')
-  const role: string = fromBody(ctx, 'role', 'string')
+  const { role } = ctx.params
   const contact_info = ctx.request.body.contact_info
 
   const staffMember = await staff.insertStaff(username, password, role, contact_info)
@@ -78,12 +82,21 @@ export async function postStaff(ctx: IRouterContext): Promise<any> {
   })
 }
 
-export async function putStaff(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+export async function patchStaff(ctx: IRouterContext): Promise<any> {
+  const username: string = fromBody(ctx, 'username', 'string')
+  const password: string = fromBody(ctx, 'password', 'string')
+  const { role } = ctx.params
 }
 
 export async function delStaff(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  const staff_id = getPositiveIntegerParam(ctx, 'staff_id')
+  const { role } = ctx.params
+
+  const deleted = await staff.delStaff(staff_id, role)
+
+  return Object.assign(ctx.response, {
+    status: deleted ? 200 : 404
+  })
 }
 
 export async function getSettings(ctx: IRouterContext): Promise<any> {
