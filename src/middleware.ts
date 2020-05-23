@@ -1,5 +1,6 @@
 import { IMiddleware, IRouterContext } from 'koa-router'
 import * as sessions from './sessions'
+import * as permissions from './permissions'
 
 
 // TODO
@@ -18,8 +19,12 @@ export const attachStaffMemberFromSession: IMiddleware = (
 
 export const verifyPermissions: IMiddleware = (
   async (ctx: IRouterContext, next) => {
-    console.log('verifyPermissions', (ctx as any).associatedStaffMember)
-    await next()
+    const role = (ctx as any).associatedStaffMember?.role
+    const isPermitted = permissions.checkPermissions(role, ctx.method, ctx.path)
+    if (isPermitted) return next()
+    Object.assign(ctx.response, { status: 403 })
+
+    
   }
 )
 

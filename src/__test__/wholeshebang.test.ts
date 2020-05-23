@@ -3,6 +3,7 @@ import * as moment from 'moment'
 import { expect } from 'chai'
 import * as request from 'supertest'
 import * as passwords from '../passwords'
+import * as permissions from '../permissions'
 import db from '../db'
 import server from '../server'
 
@@ -18,17 +19,17 @@ const dropAll = () =>
 
 
 describe('the whole shebang', () => {
+
   let app: any
-
-  before(dropAll)
-  before(() => app = server.listen(5004))
-  after(() => app.close())
-  after(() => db.destroy()) // Leave the database contents alone in case these are useful to inspect after tests have run
-
   let admin_role_id: number
   let contact_tracer_role_id: number
   let contactTracerAgent: request.SuperTest<request.Test>
   let notLoggedInAgent: request.SuperTest<request.Test>
+
+  before(dropAll)
+  before(() => app = server.listen(5004))
+  after(() => app && app.close())
+  after(() => db.destroy()) // Leave the database contents alone in case these are useful to inspect after tests have run
 
   it('sets up the database with seed data, incl. basic roles and a contact tracer', async () => {
     admin_role_id = first(await db('roles').insert({ role: 'admin' }).returning('id'))
@@ -38,8 +39,10 @@ describe('the whole shebang', () => {
     await db('permissions').insert({ role_id: admin_role_id, method_pattern: '*', route_pattern: '*' })
 
     // Contact tracers can only generate auth codes and interact with cases
-    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/authcode/create' })
-    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/cases*' })
+    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/authcode/create' })
+    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/cases*' })
+
+    await permissions.readPermissionsIntoMemory()
 
     // Add a contact tracer with an encrypted password
     await db('staff').insert({ 

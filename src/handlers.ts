@@ -72,7 +72,7 @@ export async function createAuthcode(ctx: IRouterContext) {
 }
 
 export async function postCase(ctx: IRouterContext) {
-
+  return Object.assign(ctx.response, { status: 200, body: { yes: 'please' } })
 }
 
 export async function getCases(ctx: IRouterContext) {

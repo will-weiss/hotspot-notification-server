@@ -41,5 +41,11 @@ export function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string
 
 export async function getAssociatedStaffMember(sessionKey: string) {
   const staffMemberId = await store.get(sessionKey)
-  return first(await db('staff').select('*').where({ id: staffMemberId }))
+  return first(
+    await db
+      .from('staff')
+      .select('staff.id', 'staff.username', 'roles.role')
+      .join('roles', { 'staff.role_id': 'roles.id' })
+      .where('staff.id', staffMemberId as any)
+  )
 }
