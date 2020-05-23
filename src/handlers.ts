@@ -4,6 +4,7 @@ import db from './db'
 import * as sessions from './sessions'
 import * as cases from './cases'
 import * as staff from './staff'
+import * as locationTrailPoints from './locationTrailPoints'
 
 
 const fromBody = (ctx: IRouterContext, fieldName: string, type: 'string' | 'number' | 'boolean') => {
@@ -83,9 +84,9 @@ export async function postStaff(ctx: IRouterContext): Promise<any> {
 }
 
 export async function patchStaff(ctx: IRouterContext): Promise<any> {
-  const username: string = fromBody(ctx, 'username', 'string')
-  const password: string = fromBody(ctx, 'password', 'string')
-  const { role } = ctx.params
+  // const username: string = fromBody(ctx, 'username', 'string')
+  // const password: string = fromBody(ctx, 'password', 'string')
+  // const { role } = ctx.params
 }
 
 export async function delStaff(ctx: IRouterContext): Promise<any> {
@@ -111,33 +112,14 @@ export async function createAuthcode(ctx: IRouterContext): Promise<any> {
   throw new Error('To Be Implemented')
 }
 
-const isoRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})[+-](\d{2})\:(\d{2})$/
-
 export async function postCase(ctx: IRouterContext): Promise<any> {
   const patient_record_info = ctx.request.body.patient_record_info || {}
   const location_trail_points = ctx.request.body.location_trail_points || []
 
-  if (!Array.isArray(location_trail_points)) {
-    throw { status: 400, message: 'location_trail_points must be an array' }
-  }
-
-  // tslint:disable-next-line:no-expression-statement
-  location_trail_points.forEach(({ lat, lon, start_ts, end_ts }: any, i) => {
-    if (typeof lat !== 'number') {
-      throw { status: 400, message: `lat must be a number, but it was not at location_trail_points[${i}]` }
-    }
-    if (typeof lon !== 'number') {
-      throw { status: 400, message: `lon must be a number, but it was not at location_trail_points[${i}]` }
-    }
-    if (!isoRegex.test(start_ts)) {
-      throw { status: 400, message: `start_ts must be a string in ISO format, but it was not at location_trail_points[${i}]` }
-    }
-    if (!isoRegex.test(end_ts)) {
-      throw { status: 400, message: `end_ts must be a string in ISO format, but it was not at location_trail_points[${i}]` }
-    }
-  })
-
-  const case_id: number = await cases.postCase({ patient_record_info, location_trail_points })
+  const case_id: number = (
+    locationTrailPoints.isLocationTrailPoints(location_trail_points),
+    await cases.postCase({ patient_record_info, location_trail_points })
+  )
 
   return Object.assign(ctx.response, { status: 200, body: { id: case_id! } })
 }
@@ -171,7 +153,22 @@ export async function editPatientRecordInformation(ctx: IRouterContext): Promise
 }
 
 export async function postLocationTrailPoints(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  const case_id = getPositiveIntegerParam(ctx, 'case_id')
+  const { body } = ctx.request
+  const location_trail_points = Array.isArray(body) ? body : [body]
+
+  const locationTrailPointIds = (
+    locationTrailPoints.isLocationTrailPoints(location_trail_points),
+    await locationTrailPoints.addLocationTrailPointsToCase(case_id, location_trail_points).returning('id')
+  )
+
+  return Object.assign(ctx.response, {
+    status: 200,
+    body: location_trail_points.map((point, i) => ({
+      id: locationTrailPointIds[i],
+      ...point,
+    }))
+  })
 }
 
 export async function redactLocationTrailPoint(ctx: IRouterContext): Promise<any> {

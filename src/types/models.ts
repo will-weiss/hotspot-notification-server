@@ -1,15 +1,20 @@
-type StandardPostgresModel = {
+
+type LocationTrailPointIncomingPayload = {
+  lat: number
+  lon: number
+  start_ts: string
+  end_ts: string
+}
+
+type LocationTrailPointsIncomingPayload = ReadonlyArray<LocationTrailPointIncomingPayload>
+
+type CaseIncomingPayload = {
+  patient_record_info: any
+  location_trail_points: ReadonlyArray<LocationTrailPointIncomingPayload>
+  infection_risk?: number
+}
+
+type CaseOutgoingPayload = CaseIncomingPayload & {
   id: number
-  updated_at: Date
-  created_at: Date
+  infection_risk: number
 }
-
-type HealthyAuthorityInfoModel = StandardPostgresModel & {
-  key: string
-  value: string
-}
-
-type RoleModel = StandardPostgresModel & {
-  role: string
-}
-

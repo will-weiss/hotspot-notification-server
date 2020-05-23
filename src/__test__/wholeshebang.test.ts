@@ -139,27 +139,67 @@ describe('the whole shebang', () => {
     })
 
     it('200s and returns the case and its location points in lat/lon format on a GET to /cases/$case_id', async () => {
-      return contactTracerAgent
+      const response = await contactTracerAgent
         .get(`/v1/cases/${createdCovidCaseId}`)
-        .expect(200, {
-          id: createdCovidCaseId,
-          patient_record_info: { some: 'metadata' },
-          infection_risk: 1,
-          location_trail_points: [
-            {
-              lat: 39.943436,
-              lon: -76.993565,
-              start_ts: '2020-05-05T00:00:00-04:00',
-              end_ts: '2020-05-05T00:05:00-04:00',
-            },
-            {
-              lat: 39.940623,
-              lon: -76.992139,
-              start_ts: '2020-05-05T00:05:00-04:00',
-              end_ts: '2020-05-05T00:10:00-04:00',
-            },
-          ]
+        .expect(200)
+
+      expect(response.body).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'location_trail_points')
+      expect(response.body.id).to.equal(createdCovidCaseId)
+      expect(response.body.patient_record_info).to.eql({ some: 'metadata' })
+      expect(response.body.infection_risk).to.equal(1) // default
+      expect(response.body.location_trail_points).to.be.an('array').that.has.length(2)
+
+      expect(response.body.location_trail_points[0]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
+      expect(response.body.location_trail_points[0].id).to.be.a('number')
+      expect(response.body.location_trail_points[0].lat).to.equal(39.943436)
+      expect(response.body.location_trail_points[0].lon).to.equal(-76.993565)
+      expect(response.body.location_trail_points[0].start_ts).to.equal('2020-05-05T00:00:00-04:00')
+      expect(response.body.location_trail_points[0].end_ts).to.equal('2020-05-05T00:05:00-04:00')
+
+      expect(response.body.location_trail_points[1]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
+      expect(response.body.location_trail_points[1].id).to.be.a('number')
+      expect(response.body.location_trail_points[1].lat).to.equal(39.940623)
+      expect(response.body.location_trail_points[1].lon).to.equal(-76.992139)
+      expect(response.body.location_trail_points[1].start_ts).to.equal('2020-05-05T00:05:00-04:00')
+      expect(response.body.location_trail_points[1].end_ts).to.equal('2020-05-05T00:10:00-04:00')
+    })
+
+    it('200s on POST to /cases/:case_id/location_trail_points with either a single point object or an array of point objects', async () => {
+      await contactTracerAgent
+        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points`)
+        .send({
+          lat: 40,
+          lon: -80,
+          start_ts: '2020-05-05T00:10:00-04:00',
+          end_ts: '2020-05-05T00:15:00-04:00',
         })
+        .expect(200)
+
+      await contactTracerAgent
+        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points`)
+        .send([
+          {
+            lat: 72,
+            lon: -62,
+            start_ts: '2020-05-05T00:15:00-04:00',
+            end_ts: '2020-05-05T00:20:00-04:00',
+          },
+          {
+            lat: 74,
+            lon: -62,
+            start_ts: '2020-05-05T00:20:00-04:00',
+            end_ts: '2020-05-05T00:25:00-04:00',
+          }
+        ])
+        .expect(200)
+
+      const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`)
+
+      expect(response.body.location_trail_points).to.have.length(5)
+      response.body.location_trail_points.forEach((point: any) => {
+        expect(point).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
+        expect(point.id).to.be.a('number')
+      })
     })
 
     it('200s and ends the session on a DELETE to /session', async () => {
@@ -211,6 +251,10 @@ describe('the whole shebang', () => {
       createdContactTracerId = response.body.id
     })
 
+    // it('200s and allows a change of password', () => {
+
+    // })
+
     it('404s for DELETE to /staff/:role/:staff_id when staff id is of a different role', async () => {
       await adminAgent
         .del(`/v1/staff/admin/${createdContactTracerId}`)
@@ -231,13 +275,13 @@ describe('the whole shebang', () => {
       expect(staffMemberNoLongerPresent).to.equal(undefined)
     })
 
-    // it('400s for POST to /staff/:role when role does not exist', done => {
-    //   adminAgent
-    //     .post(`/v1/staff/plumber`)
-    //     .send({ username: 'new_user_nope', password: 'okyesverynice' })
-    //     .expect(400, 'role (plumber) does not exist')
-    //     .end(done)
-    // })
+    it('400s for POST to /staff/:role when role does not exist', done => {
+      adminAgent
+        .post(`/v1/staff/plumber`)
+        .send({ username: 'new_user_nope', password: 'okyesverynice' })
+        .expect(400, 'role (plumber) does not exist')
+        .end(done)
+    })
 
     // it('200s for a case deletion', () => {
 

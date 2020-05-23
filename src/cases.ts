@@ -1,31 +1,13 @@
 import * as knexPostgis from 'knex-postgis'
 import db from './db'
+import { addLocationTrailPointsToCase } from './locationTrailPoints'
 
-
-const st = knexPostgis(db)
-
-type LocationTrailPointPayload = {
-  lat: number
-  lon: number
-  start_ts: number
-  end_ts: number
-}
-
-type CaseIncomingPayload = {
-  patient_record_info: any
-  location_trail_points: ReadonlyArray<LocationTrailPointPayload>
-  infection_risk?: number
-}
-
-type CaseOutgoingPayload = CaseIncomingPayload & {
-  id: number
-  infection_risk: number
-}
 
 export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayload>> {
   const result = await db.raw(`
     with lat_lon_points as (
       SELECT
+        id,
         start_ts,
         end_ts,
         ST_X(location::geometry) AS lon,
@@ -69,18 +51,10 @@ export async function postCase({ patient_record_info, location_trail_points }: C
 
       case_id = case_ids[0] // tslint:disable-line:no-expression-statement
 
-      const location_trail_points_insert =
-        location_trail_points.map(({ lat, lon, start_ts, end_ts }: any) => ({
-          case_id,
-          location: st.geomFromText(`Point(${lon} ${lat})`, 4326),
-          start_ts: new Date(start_ts),
-          end_ts: new Date(end_ts),
-        }))
-
-      // tslint:disable-next-line:no-expression-statement
-      await db('location_trail_points').transacting(trx).insert(location_trail_points_insert)
-
-      return trx.commit()
+      return (
+        await addLocationTrailPointsToCase(case_id, location_trail_points, trx),
+        trx.commit()
+      )
     } catch (err) {
       return trx.rollback(err)
     }
