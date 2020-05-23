@@ -40,7 +40,7 @@ describe('the whole shebang', () => {
 
     // Contact tracers can only generate auth codes and interact with cases
     await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/authcode/create' })
-    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/cases*' })
+    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: '*', route_pattern: '/v1/cases*' })
 
     await permissions.readPermissionsIntoMemory()
 
@@ -109,14 +109,14 @@ describe('the whole shebang', () => {
           {
             lat: 39.943436,
             lon: -76.993565,
-            start_ts: moment('2020-05-05T00:00:00').toISOString(),
-            end_ts: moment('2020-05-05T00:05:00').toISOString(),
+            start_ts: '2020-05-05T00:00:00-04:00',
+            end_ts: '2020-05-05T00:05:00-04:00',
           },
           {
             lat: 39.940623,
             lon: -76.992139,
-            start_ts: moment('2020-05-05T00:05:00').toISOString(),
-            end_ts: moment('2020-05-05T00:10:00').toISOString(),
+            start_ts: '2020-05-05T00:05:00-04:00',
+            end_ts: '2020-05-05T00:10:00-04:00',
           },
         ]
       })
@@ -124,43 +124,72 @@ describe('the whole shebang', () => {
       .end(done)
   })
 
+  let createdCovidCaseId: number
+
   it('200s and adds a case on a POST /cases from a logged in staff member with permission', async () => {
     const response = await contactTracerAgent
       .post('/v1/cases')
-      .send({ 
+      .send({
         patient_record_info: { some: 'metadata' },
         location_trail_points: [
           {
             lat: 39.943436,
             lon: -76.993565,
-            start_ts: moment('2020-05-05T00:00:00').toISOString(),
-            end_ts: moment('2020-05-05T00:05:00').toISOString(),
+            start_ts: '2020-05-05T00:00:00-04:00',
+            end_ts: '2020-05-05T00:05:00-04:00',
           },
           {
             lat: 39.940623,
             lon: -76.992139,
-            start_ts: moment('2020-05-05T00:05:00').toISOString(),
-            end_ts: moment('2020-05-05T00:10:00').toISOString(),
+            start_ts: '2020-05-05T00:05:00-04:00',
+            end_ts: '2020-05-05T00:10:00-04:00',
           },
         ]
       })
       .expect(200)
 
-    const covidCase = response.body
+    createdCovidCaseId = response.body.id
 
-    expect(covidCase.id).to.be.a('number')
+    expect(createdCovidCaseId).to.be.a('number')
 
-    const location_trail_points = await db('location_trail_points').select('*').where({ case_id: covidCase.id })
+    const location_trail_points = await db('location_trail_points').select('*').where({ case_id: createdCovidCaseId })
 
     expect(location_trail_points).to.have.length(2)
   
     const { rows } = await db.raw(`
       select ST_Distance(
-        (select location from location_trail_points where id = ${location_trail_points[0].id}),
-        (select location from location_trail_points where id = ${location_trail_points[1].id})
+        (select location::geometry from location_trail_points where id = ${location_trail_points[0].id}),
+        (select location::geometry from location_trail_points where id = ${location_trail_points[1].id})
       )
     `)
 
-    expect(rows[0].st_distance).to.equal(174.18927812)
+    
+    expect(rows[0].st_distance).to.equal(0.0031537985033931537)
+  })
+
+  it('200s and returns the case and its location points in lat/lon format on a GET to /cases/$case_id', async () => {
+    console.log('createdCovidCaseId', createdCovidCaseId)
+    
+    return contactTracerAgent
+      .get(`/v1/cases/${createdCovidCaseId}`)
+      .expect(200, {
+        id: createdCovidCaseId,
+        patient_record_info: { some: 'metadata' },
+        infection_risk: 1,
+        location_trail_points: [
+          {
+            lat: 39.943436,
+            lon: -76.993565,
+            start_ts: '2020-05-05T00:00:00-04:00',
+            end_ts: '2020-05-05T00:05:00-04:00',
+          },
+          {
+            lat: 39.940623,
+            lon: -76.992139,
+            start_ts: '2020-05-05T00:05:00-04:00',
+            end_ts: '2020-05-05T00:10:00-04:00',
+          },
+        ]
+      })
   })
 })

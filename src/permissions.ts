@@ -10,13 +10,21 @@ type Permissions = Map<string, Permission[]>
 
 let permissions: Permissions
 
-
 let permissionsReadIntoMemory = false
 
-// 
+// Replace "/" and "*" chars with their appropriate regex equivalents
+function escapeRegExp(text: string) {
+  return text
+    .split('/')
+    .join('\\\/')
+    .split('*')
+    .join('.*')
+}
+
 const makeTest = (pattern: string): (s: string) => boolean => {
-  if (pattern === '*') return s => true // new RegExp('^*$') isn't valid
-  const regex = new RegExp('^' + pattern + '$')
+  if (pattern === '*') return s => true
+  console.log(escapeRegExp(pattern))
+  const regex = new RegExp('^' + escapeRegExp(pattern) + '$')
   return s => regex.test(s)
 }
 
