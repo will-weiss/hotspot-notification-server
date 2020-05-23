@@ -4,7 +4,7 @@ exports.up = async knex => {
   await knex.schema.createTable('staff', table => {
     table.increments('id').primary()
     table.string('username').notNull()
-    table.string('password').notNull()
+    table.string('hashed_password').notNull()
     table.integer('role_id').notNull()
     table.json('contact_info')
     table.unique('username')

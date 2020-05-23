@@ -3,7 +3,7 @@
     "clean": "rm -rf compiled",
     "compile": "tsc",
     "compile:watch": "tsc -w",
-    "dev": "npm run clean && npm run compile && { npm run compile:watch &\n nodemon &\n wait\n }",
+    "dev": "npm run clean && npm run compile && { npm run compile:watch &\n NODE_ENV=dev nodemon &\n wait\n }",
     "lint": "{ find src -name '*.ts' | xargs tslint --project tsconfig.json --config tslint.json ; } && { find src -name '*.ts' -exec grep 'only: true' {} + | { ! grep ''; } }",
     "knex": "knex -- \"$@\"",
     "coverage": "npm run clean && npm run compile && istanbul cover -x '**/*.test.js*' -x '**/__test__/**/*.*' -x '**/entry.js' _mocha --root compiled --include-all-sources true -- --timeout 5000 --require test_setup.js 'compiled/**/*.test.js' && remap-istanbul -i coverage/coverage.json -o html-report -t html",

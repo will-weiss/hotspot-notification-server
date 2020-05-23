@@ -1,6 +1,7 @@
 import { first } from 'lodash'
 import { expect } from 'chai'
 import * as request from 'supertest'
+import * as passwords from '../passwords'
 import db from '../db'
 import server from '../server'
 
@@ -21,7 +22,7 @@ describe('the whole shebang', () => {
   before(dropAll)
   before(() => app = server.listen(5004))
   after(() => app.close())
-  after(() => db.destroy())
+  after(() => db.destroy()) // Leave the database contents alone in case these are useful to inspect after tests have run
 
   let admin_role_id: number
   let contact_tracer_role_id: number
@@ -31,8 +32,6 @@ describe('the whole shebang', () => {
     admin_role_id = first(await db('roles').insert({ role: 'admin' }).returning('id'))
     contact_tracer_role_id = first(await db('roles').insert({ role: 'contact_tracer' }).returning('id'))
 
-    console.log(admin_role_id, typeof admin_role_id)
-
     // Admins can do it all
     await db('permissions').insert({ role_id: admin_role_id, method_pattern: '*', route_pattern: '*' })
 
@@ -40,7 +39,12 @@ describe('the whole shebang', () => {
     await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/authcode/create' })
     await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/cases*' })
 
-    await db('staff').insert({ username: 'contact_tracer_1', password: 'deadbeefdeadbeefdeadbeef', role_id: contact_tracer_role_id })
+    // Add a contact tracer with an encrypted password
+    await db('staff').insert({ 
+      username: 'contact_tracer_1',
+      hashed_password: await passwords.encrypt('deadbeefdeadbeefdeadbeef'),
+      role_id: contact_tracer_role_id 
+    })
   })
 
   it('sets up a request.agent for the contact tracer', () => {
@@ -68,6 +72,14 @@ describe('the whole shebang', () => {
       .post('/v1/session')
       .send({ username: 'contact_tracer_1', password: 'whoops-deadbeefdeadbeefdeadbeef' })
       .expect(401)
+      .end(done)
+  })
+
+  it('404s when POST to /session is nonexistent user', done => {
+    contactTracerAgent
+      .post('/v1/session')
+      .send({ username: 'contact_tracer_77', password: 'deadbeefdeadbeefdeadbeef' })
+      .expect(404)
       .end(done)
   })
 })
