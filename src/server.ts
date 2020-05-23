@@ -16,5 +16,4 @@ const server = new Koa()
   .use(router.allowedMethods())
   // .use(staticAssets({ rootDir: 'public' }))
 
-
 export default server
