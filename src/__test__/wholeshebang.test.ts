@@ -1,4 +1,5 @@
 import { first } from 'lodash'
+import * as moment from 'moment'
 import { expect } from 'chai'
 import * as request from 'supertest'
 import * as passwords from '../passwords'
@@ -27,6 +28,7 @@ describe('the whole shebang', () => {
   let admin_role_id: number
   let contact_tracer_role_id: number
   let contactTracerAgent: request.SuperTest<request.Test>
+  let notLoggedInAgent: request.SuperTest<request.Test>
 
   it('sets up the database with seed data, incl. basic roles and a contact tracer', async () => {
     admin_role_id = first(await db('roles').insert({ role: 'admin' }).returning('id'))
@@ -47,8 +49,9 @@ describe('the whole shebang', () => {
     })
   })
 
-  it('sets up a request.agent for the contact tracer', () => {
+  it('sets up a request.agent for the contact tracer and a not logged in user', () => {
     contactTracerAgent = request.agent(app)
+    notLoggedInAgent = request.agent(app)
   })
 
   it('400s when POST to /session has no password', done => {
@@ -81,5 +84,62 @@ describe('the whole shebang', () => {
       .send({ username: 'contact_tracer_77', password: 'deadbeefdeadbeefdeadbeef' })
       .expect(404)
       .end(done)
+  })
+
+  it('200s when POST to /session has correct username and password', done => {
+    contactTracerAgent
+      .post('/v1/session')
+      .send({ username: 'contact_tracer', password: 'deadbeefdeadbeefdeadbeef' })
+      .expect(404)
+      .end(done)
+  })
+
+  it('403s when a not logged in staff member attempts to POST to /cases', done => {
+    notLoggedInAgent
+      .post('/cases')
+      .send({ 
+        patient_record_info: { some: 'metadata' },
+        location_trail_points: [
+          {
+            lat: 39.943436,
+            lon: -76.993565,
+            start_ts: moment('2020-05-05T00:00:00').format('x'),
+            end_ts: moment('2020-05-05T00:05:00').format('x'),
+          },
+          {
+            lat: 39.940623,
+            lon: -76.992139,
+            start_ts: moment('2020-05-05T00:05:00').format('x'),
+            end_ts: moment('2020-05-05T00:10:00').format('x'),
+          },
+        ]
+      })
+      .expect(403)
+      .end(done)
+  })
+
+  it('200s and adds a case on a POST /cases from a logged in staff member with permission', async () => {
+    const response = await notLoggedInAgent
+      .post('/cases')
+      .send({ 
+        patient_record_info: { some: 'metadata' },
+        location_trail_points: [
+          {
+            lat: 39.943436,
+            lon: -76.993565,
+            start_ts: moment('2020-05-05T00:00:00').format('x'),
+            end_ts: moment('2020-05-05T00:05:00').format('x'),
+          },
+          {
+            lat: 39.940623,
+            lon: -76.992139,
+            start_ts: moment('2020-05-05T00:05:00').format('x'),
+            end_ts: moment('2020-05-05T00:10:00').format('x'),
+          },
+        ]
+      })
+      .expect(200)
+
+    console.log(response.body)
   })
 })

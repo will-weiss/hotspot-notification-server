@@ -27,7 +27,7 @@
     "lodash": "4.17.15",
     "memory-cache": "0.2.0",
     "mocha.parallel": "0.15.3",
-    "moment": "2.19.3",
+    "moment": "^2.19.3",
     "node-uuid": "1.4.8",
     "pg": "8.2.1"
   },
@@ -47,7 +47,7 @@
     "@types/lodash": "4.14.62",
     "@types/memory-cache": "0.0.31",
     "@types/mocha": "2.2.35",
-    "@types/moment": "2.13.0",
+    "@types/moment": "^2.13.0",
     "@types/node": "10.12.2",
     "@types/node-uuid": "0.0.28",
     "@types/pg": "7.14.3",
