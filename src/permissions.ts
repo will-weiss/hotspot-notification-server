@@ -69,7 +69,6 @@ export async function readPermissionsIntoMemory(): Promise<void> {
 }
 
 export function checkPermissions(role: Maybe<string>, method: string, path: string): boolean {
-
   // session route doesn't have to
   if (path.endsWith('/session')) return true
 

@@ -1,3 +1,1 @@
-
-
-export const minimumPasswordLength = 24
+export const minimumPasswordLength = 8

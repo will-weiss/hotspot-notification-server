@@ -3,10 +3,11 @@
 import { first } from 'lodash'
 import { expect } from 'chai'
 import * as request from 'supertest'
-import * as passwords from '../passwords'
 import * as permissions from '../permissions'
 import db from '../db'
 import server from '../server'
+const { seed } = require('../../db/seeds/two_role_three_user')
+
 
 const dropAll = () =>
   db.raw(`
@@ -22,41 +23,19 @@ const dropAll = () =>
 describe('the whole shebang', () => {
 
   let app: any
-  let admin_role_id: number
-  let contact_tracer_role_id: number
   let contactTracerAgent: request.SuperTest<request.Test>
   let notLoggedInAgent: request.SuperTest<request.Test>
 
-  before(dropAll)
+  before(() => seed(db))
+  before(permissions.readPermissionsIntoMemory)
   before(() => app = server.listen(5004))
-  after(() => app && app.close())
-  after(() => db.destroy()) // Leave the database contents alone in case these are useful to inspect after tests have run
-
-  it('sets up the database with seed data, incl. basic roles and a contact tracer', async () => {
-    admin_role_id = first(await db('roles').insert({ role: 'admin' }).returning('id'))
-    contact_tracer_role_id = first(await db('roles').insert({ role: 'contact_tracer' }).returning('id'))
-
-    // Admins can do it all
-    await db('permissions').insert({ role_id: admin_role_id, method_pattern: '*', route_pattern: '*' })
-
-    // Contact tracers can only generate auth codes and interact with cases
-    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/authcode/create' })
-    await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: '*', route_pattern: '/v1/cases*' })
-
-    await permissions.readPermissionsIntoMemory()
-
-    // Add a contact tracer with an encrypted password
-    await db('staff').insert({
-      username: 'contact_tracer_1',
-      hashed_password: await passwords.encrypt('deadbeefdeadbeefdeadbeef'),
-      role_id: contact_tracer_role_id
-    })
-  })
-
-  it('sets up a request.agent for the contact tracer and a not logged in user', () => {
+  before(() => {
     contactTracerAgent = request.agent(app)
     notLoggedInAgent = request.agent(app)
   })
+
+  after(() => app && app.close())
+  after(() => db.destroy()) // Leave the database contents alone in case these are useful to inspect after tests have run
 
   it('400s when POST to /session has no password', done => {
     contactTracerAgent
@@ -69,7 +48,7 @@ describe('the whole shebang', () => {
   it('400s when POST to /session has no username', done => {
     contactTracerAgent
       .post('/v1/session')
-      .send({ password: 'deadbeefdeadbeefdeadbeef' })
+      .send({ password: 'pw_contact_tracer_1' })
       .expect(400)
       .end(done)
   })
@@ -77,7 +56,7 @@ describe('the whole shebang', () => {
   it('401s when POST to /session has incorrect password', done => {
     contactTracerAgent
       .post('/v1/session')
-      .send({ username: 'contact_tracer_1', password: 'whoops-deadbeefdeadbeefdeadbeef' })
+      .send({ username: 'contact_tracer_1', password: 'whoops-pw_contact_tracer_1' })
       .expect(401)
       .end(done)
   })
@@ -85,7 +64,7 @@ describe('the whole shebang', () => {
   it('404s when POST to /session is nonexistent user', done => {
     contactTracerAgent
       .post('/v1/session')
-      .send({ username: 'contact_tracer_77', password: 'deadbeefdeadbeefdeadbeef' })
+      .send({ username: 'contact_tracer_77', password: 'pw_contact_tracer_1' })
       .expect(404)
       .end(done)
   })
@@ -93,7 +72,7 @@ describe('the whole shebang', () => {
   it('200s when POST to /session has correct username and password', done => {
     contactTracerAgent
       .post('/v1/session')
-      .send({ username: 'contact_tracer_1', password: 'deadbeefdeadbeefdeadbeef' })
+      .send({ username: 'contact_tracer_1', password: 'pw_contact_tracer_1' })
       .expect(200)
       .expect(res => {
         expect(res.header).to.have.property('set-cookie')
