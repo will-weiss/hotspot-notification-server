@@ -19,10 +19,7 @@ COPY src/ /usr/hotspot-notification-server/src
 RUN npm run lint
 RUN npm run compile
 
-
-
 # RUN npm test
 # RUN npm prune production
 
-# # When run, this container executes the vericred batch job
 CMD ["node", "compiled/entry.js"]

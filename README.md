@@ -111,3 +111,10 @@ Commit order
 - Self Reporting
 - Device Attestation
 - Cleanup old location points
+
+
+
+
+# Random lines to remember
+
+heroku config:set PGSSLMODE=require --app hotspot-notification-server
