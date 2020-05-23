@@ -158,4 +158,9 @@ describe('the whole shebang', () => {
         ]
       })
   })
+
+  it('200s and ends the session on a DELETE to /session', async () => {
+    await contactTracerAgent.del(`/v1/session`)
+    await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`).expect(403)
+  })
 })

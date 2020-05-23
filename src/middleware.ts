@@ -3,11 +3,9 @@ import * as sessions from './sessions'
 import * as permissions from './permissions'
 
 
-// TODO
 export const attachStaffMemberFromSession: IMiddleware = (
   async (ctx: IRouterContext, next) => {
-    const sessionKey = sessions.extractSessionKeyFromCookie(ctx.request.headers.cookie)
-    const associatedStaffMember = sessionKey && await sessions.getAssociatedStaffMember(sessionKey)
+    const associatedStaffMember = await sessions.getAssociatedStaffMemberFromCookie(ctx.request.headers.cookie)
 
     if (associatedStaffMember) {
       Object.assign(ctx, { associatedStaffMember }) // tslint:disable-line:no-expression-statement

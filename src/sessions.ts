@@ -37,7 +37,7 @@ export async function createSessionForStaffMember(ctx: IRouterContext, staff_mem
   )
 }
 
-export function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string> {
+function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string> {
   if (!cookie) return
   const matchingCookie = cookie.split(';').map(s => s.trim()).find(s => s.startsWith(cookieKey))
   if (!matchingCookie) return
@@ -45,9 +45,9 @@ export function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string
   return sessionKey
 }
 
-export async function getAssociatedStaffMember(sessionKey: string): Promise<StaffMemberOutgoingPayload> {
+async function getAssociatedStaffMemberFromSessionKey(sessionKey: string): Promise<Maybe<StaffMemberOutgoingPayload>> {
   const staffMemberId = await store.get(sessionKey)
-  return first(
+  return staffMemberId && first(
     await db
       .from('staff')
       .select('staff.id', 'staff.username', 'roles.role')
@@ -55,3 +55,14 @@ export async function getAssociatedStaffMember(sessionKey: string): Promise<Staf
       .where('staff.id', staffMemberId as any)
   )
 }
+
+export async function getAssociatedStaffMemberFromCookie(cookie: Maybe<string>): Promise<Maybe<StaffMemberOutgoingPayload>> {
+  const sessionKey = extractSessionKeyFromCookie(cookie)
+  if (sessionKey) return getAssociatedStaffMemberFromSessionKey(sessionKey)
+}
+
+export async function removeSessionOfCookie(cookie: Maybe<string>): Promise<void> {
+  const sessionKey = extractSessionKeyFromCookie(cookie)
+  if (sessionKey) return store.destroy(sessionKey)
+}
+

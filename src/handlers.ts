@@ -33,7 +33,10 @@ export async function createSession(ctx: IRouterContext): Promise<any> {
 }
 
 export async function delSession(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  return (
+    await sessions.removeSessionOfCookie(ctx.request.headers.cookie),
+    Object.assign(ctx.response, { status: 200 })
+  )
 }
 
 export async function getHealthAuthorityInfo(ctx: IRouterContext): Promise<any> {
