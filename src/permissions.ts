@@ -16,8 +16,8 @@ let permissionsReadIntoMemory = false
 
 // Replace "/" and "*" chars with their appropriate regex equivalents
 function escapeRegExp(text: string): string {
-  if (!/^[a-z]\/+$/.test(text)) {
-    throw { status: 400, message: 'Pattern must consist of "a-z", "/", or "*" characters only' }
+  if (!/^([a-z]|[A-Z]|[0-9]|\/|\*)+$/.test(text)) {
+    throw { status: 400, message: 'Pattern must consist of "a-z", "A-Z", "0-9", "/", or "*" characters only' }
   }
 
   return text

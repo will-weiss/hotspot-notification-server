@@ -168,8 +168,6 @@ describe('the whole shebang', () => {
   })
 
   it('200s and returns the case and its location points in lat/lon format on a GET to /cases/$case_id', async () => {
-    console.log('createdCovidCaseId', createdCovidCaseId)
-
     return contactTracerAgent
       .get(`/v1/cases/${createdCovidCaseId}`)
       .expect(200, {
