@@ -192,5 +192,31 @@ describe('the whole shebang', () => {
       expect(contact_tracer_1).to.be.an('object').that.has.all.keys('id', 'username', 'role', 'created_at', 'updated_at')
       expect(contact_tracer_2).to.be.an('object').that.has.all.keys('id', 'username', 'role', 'created_at', 'updated_at')
     })
+
+    it('200s for POST to /staff when all fields present', async () => {
+      const response = await (
+        adminAgent
+          .post(`/v1/staff`)
+          .send({ username: 'new_user', password: 'okyesverynice', role: 'contact_tracer' })
+          .expect(200)
+      )
+
+      expect(response.body).to.have.all.keys('id', 'username', 'role')
+      expect(response.body.id).to.be.a('number')
+      expect(response.body.username).to.equal('new_user')
+      expect(response.body.role).to.equal('contact_tracer')
+    })
+
+    it('400s for POST to /staff when role does not exist', done => {
+      adminAgent
+        .post(`/v1/staff`)
+        .send({ username: 'new_user_nope', password: 'okyesverynice', role: 'plumber' })
+        .expect(400, 'role (plumber) does not exist')
+        .end(done)
+    })
+
+    it('200s for a case deletion', () => {
+
+    })
   })
 })

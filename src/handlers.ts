@@ -14,6 +14,15 @@ const fromBody = (ctx: IRouterContext, fieldName: string, type: 'string' | 'numb
   return value
 }
 
+const getPositiveIntegerParam = (ctx: IRouterContext, fieldName: string) => {
+  const id = Number(ctx.params[fieldName])
+  if (!id || id < 0 || Math.floor(id) !== id) {
+    throw { status: 400, message: `provided ${fieldName} must be an integer > 0` }
+  }
+
+  return id
+}
+
 export async function createSession(ctx: IRouterContext): Promise<any> {
   const username: string = fromBody(ctx, 'username', 'string')
   const password: string = fromBody(ctx, 'password', 'string')
@@ -56,7 +65,17 @@ export async function getStaff(ctx: IRouterContext): Promise<any> {
 }
 
 export async function postStaff(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  const username: string = fromBody(ctx, 'username', 'string')
+  const password: string = fromBody(ctx, 'password', 'string')
+  const role: string = fromBody(ctx, 'role', 'string')
+  const contact_info = ctx.request.body.contact_info
+
+  const staffMember = await staff.insertStaff(username, password, role, contact_info)
+
+  return Object.assign(ctx.response, {
+    status: 200,
+    body: staffMember
+  })
 }
 
 export async function putStaff(ctx: IRouterContext): Promise<any> {
@@ -116,10 +135,7 @@ export async function getCases(ctx: IRouterContext): Promise<any> {
 
 export async function getCase(ctx: IRouterContext): Promise<any> {
 
-  const case_id = Number(ctx.params.case_id)
-  if (!case_id || case_id < 0 || Math.floor(case_id) !== case_id) {
-    throw { status: 400, message: `provided case_id must be an integer > 0` }
-  }
+  const case_id = getPositiveIntegerParam(ctx, 'case_id')
 
   const covidCase = await cases.getCase(case_id)
 
@@ -132,7 +148,9 @@ export async function getCase(ctx: IRouterContext): Promise<any> {
 }
 
 export async function delCase(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  const case_id = getPositiveIntegerParam(ctx, 'case_id')
+  await db('cases').where({ id: case_id }).del()
+  return Object.assign(ctx.response, { status: 200 })
 }
 
 export async function editPatientRecordInformation(ctx: IRouterContext): Promise<any> {
