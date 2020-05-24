@@ -113,12 +113,13 @@ export async function createAuthcode(ctx: IRouterContext): Promise<any> {
 }
 
 export async function openCase(ctx: IRouterContext): Promise<any> {
+  const created_by_staff_id = (ctx as any).loggedInStaffMember?.id
   const patient_record_info = ctx.request.body.patient_record_info || {}
   const location_trail_points = ctx.request.body.location_trail_points || []
 
   const covidCase = (
     locationTrailPoints.isLocationTrailPoints(location_trail_points),
-    await cases.openCase({ patient_record_info, location_trail_points })
+    await cases.openCase({ patient_record_info, location_trail_points, created_by_staff_id })
   )
 
   return Object.assign(ctx.response, { status: 200, body: covidCase })

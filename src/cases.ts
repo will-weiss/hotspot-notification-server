@@ -25,13 +25,15 @@ export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayloa
          , patient_record_info
          , infection_risk
          , consent_to_make_public_received
-         , staff.username as consent_to_make_public_received_by_staff_username
+         , s1.username as created_by_staff_username
+         , s2.username as consent_to_make_public_received_by_staff_username
          , consent_to_make_public_given_at
          , cases.created_at
          , location_trail_points
       FROM cases
       JOIN agg_points on true
- LEFT JOIN staff on cases.consent_to_make_public_received_by_staff_id = staff.id
+ LEFT JOIN staff as s1 on cases.created_by_staff_id = s1.id
+ LEFT JOIN staff as s2 on cases.consent_to_make_public_received_by_staff_id = s2.id
      WHERE cases.id = ${case_id}
   `)
 
@@ -42,7 +44,7 @@ export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayloa
 // TODO: do this all on the database side, without needing to get the ID back
 // TODO: look over the datetime logic with a lot more strictness
 
-export async function openCase({ patient_record_info, location_trail_points }: CaseIncomingPayload): Promise<{ id: number }> {
+export async function openCase({ patient_record_info, location_trail_points, created_by_staff_id }: CaseIncomingPayload): Promise<{ id: number }> {
 
   let case_id: number // tslint:disable-line:no-let
 
@@ -51,7 +53,7 @@ export async function openCase({ patient_record_info, location_trail_points }: C
     try {
       const case_ids = await db('cases')
         .transacting(trx)
-        .insert({ patient_record_info })
+        .insert({ patient_record_info, created_by_staff_id })
         .returning('id')
 
       case_id = case_ids[0] // tslint:disable-line:no-expression-statement
@@ -93,11 +95,13 @@ export async function getCases(created_before?: string) {
             , patient_record_info
             , infection_risk
             , consent_to_make_public_received
-            , staff.username as consent_to_make_public_received_by_staff_username
+            , s1.username as created_by_staff_username
+            , s2.username as consent_to_make_public_received_by_staff_username
             , consent_to_make_public_given_at
             , cases.created_at
          FROM cases
-    LEFT JOIN staff on cases.consent_to_make_public_received_by_staff_id = staff.id
+    LEFT JOIN staff as s1 on cases.created_by_staff_id = s1.id
+    LEFT JOIN staff as s2 on cases.consent_to_make_public_received_by_staff_id = s2.id
      ORDER BY cases.created_at DESC
         LIMIT 100
   `)

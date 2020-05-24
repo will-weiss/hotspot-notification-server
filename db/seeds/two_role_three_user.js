@@ -9,7 +9,6 @@ exports.seed = async db => {
     delete from permissions;
     delete from staff;
     delete from roles;
-    delete from health_authority_info_field;
   `)
 
   const admin_role_id = first(await db('roles').insert({ role: 'admin' }).returning('id'))

@@ -144,10 +144,11 @@ describe('the whole shebang', () => {
         .expect(200)
 
       const covidCase = response.body
-      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'created_at', 'location_trail_points')
+      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'created_by_staff_username', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'created_at', 'location_trail_points')
       expect(covidCase.id).to.equal(createdCovidCaseId)
       expect(covidCase.patient_record_info).to.eql({ some: 'metadata' })
       expect(covidCase.infection_risk).to.equal(1) // default
+      expect(covidCase.created_by_staff_username).to.equal('contact_tracer_1')
       expect(covidCase.consent_to_make_public_received).to.equal(false)
       expect(covidCase.consent_to_make_public_received_by_staff_username).to.equal(null)
       expect(covidCase.consent_to_make_public_given_at).to.equal(null)
@@ -231,7 +232,7 @@ describe('the whole shebang', () => {
       const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`).expect(200)
 
       const covidCase = response.body
-      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'created_at', 'location_trail_points')
+      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'created_by_staff_username', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'created_at', 'location_trail_points')
       expect(covidCase.consent_to_make_public_received).to.equal(true)
       expect(covidCase.consent_to_make_public_received_by_staff_username).to.equal('contact_tracer_1')
       expect(covidCase.consent_to_make_public_given_at).to.be.a('string').that.satisfies((s: string) => /^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z$/)

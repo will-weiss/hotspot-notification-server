@@ -12,6 +12,7 @@ type CaseIncomingPayload = {
   patient_record_info: any
   location_trail_points: ReadonlyArray<LocationTrailPointIncomingPayload>
   infection_risk?: number
+  created_by_staff_id?: number
 }
 
 type CaseOutgoingPayload = CaseIncomingPayload & {

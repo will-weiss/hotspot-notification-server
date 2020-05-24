@@ -15,17 +15,15 @@ These location trails may be sent from an individual's mobile device having been
 - [Roles And Permissions](#️roles-and-permissions)
 - [Database Schema](#️database-schema)
 - [API Spec](http://hotspot-notification-server.herokuapp.com/docs.html)
-<!-- - [Background Processes](http://hotspot-notification-server.herokuapp.com/docs.html) -->
 - [Deployment](/DEPLOYMENT.md)
 - [Milestones](#️milestones)
 
 ## Glossary
 
-**Hotspot**: A region in space and window in time where infected individual(s) were present. See [Hotspot Determination](#hotspot-determination) for more information about how health authorities might configure how these are found.
 **Staff**: An employee of a health authority. See [Roles and Permissions](#roles-and-permissions) for how health authorities may configure their system to control who can perform which functions.
-**Case**: A
+**Case**: An individual believed to be infected with COVID-19. While unused at the moment, an `infection_risk` parameter allows space in the model for some percentage chance that an individual is infected, perhaps based on their self-reported symptoms.
 **Location Trail Point**: A point in space and window in time where an infected individual was present. These may be sent by that individual's mobile device or entered by a staff member during a conversation with the infected individual.
-**Self Reporting**
+**Hotspot**: A region in space and window in time where infected individual(s) were present. Note that hotspots define an area, not just a point. See [Hotspot Determination](#hotspot-determination) for more information about how health authorities might configure how these are found.
 
 ## Model
 
@@ -51,26 +49,19 @@ to access  Note that specific roles such as "admin" or "contact_tracer" aren't d
 
 
 
-
-
-
 ### Schema
 
 - id, created_ts, updated_ts are present for each model
 
 ### Tables
 
-health_authority_info_field
-  - key
-  - value
-
 roles
   - role
 
 permissions
   - role_id
-  - method
-  - route
+  - method_pattern
+  - route_pattern
 
 staff
   - username
@@ -78,28 +69,28 @@ staff
   - role_id
   - contact_info
 
-auth_codes?
-  - code
-
 cases
   - created_by_staff
   - patient_record_info
   - infection_risk
-  - redacted
+  - consent_to_make_public_received
+  - consent_to_make_public_given_at
+  - consent_to_make_public_received_by_staff_id
+
 
 location_trail_points
   - case_id
-  - lat
-  - lon
+  - location
   - start_ts
   - end_ts
+  - redacted
 
 hotspots (materialized view?)
-  - epicenter_lat
-  - epicenter_lon
+  - epicenter_location
+  - radius
   - start_ts
   - end_ts
-  - published
+  - made_public
 
 past_hotspots?
   - epicenter_lat
@@ -115,34 +106,9 @@ past_hotspots?
 - hotspot_minimum_individuals
 - hotspot_minimum_time_present
 
-
-## Functions
-
-- `POST`   `/session`
-- `DELETE` `/session`
-- `GET`    `/health_authority_info`
-- `PUT`    `/health_authority_info`
-- `GET`    `/staff`
-- `POST`   `/staff`
-- `PUT`    `/staff/$health_authority_staff_id`
-- `DELETE` `/staff/$health_authority_staff_id`
-- `GET`    `/settings`
-- `PUT`    `/settings/$setting_id`
-- `POST`   `/authcode/create` (mobile number)
-- `POST`   `/cases` { auth_code?, location_trail_points, patient_record_information }
-- `GET`    `/cases` ?page=pageId -> { case_id, location_trail_points, patient_record_information }[]
-- `DELETE` `/cases/$case_id`
-- `PUT`    `/cases/$case_id/patient_record_information`
-- `POST`   `/cases/$case_id/location_trail_points`
-- `DELETE` `/cases/$case_id/location_trail_points/$location_trail_point_id`
-- `GET`    `/hotspots?past=$timestamp&pubished=$published&unpublished=$unpublished`
-- `POST`   `/hotspots/$hotspot_id/publish`
-
 ## Background Processes
 
 <!-- Cleanup old location points? -->
-
-## Deployment
 
 ## Milestones
 
