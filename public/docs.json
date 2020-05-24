@@ -138,12 +138,10 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "A new case",
-            "schema": {
-              "$ref": "#/definitions/NewCase"
-            }
+            "in": "path",
+            "name": "case_id",
+            "description": "The case id",
+            "type": "int32"
           }
         ],
         "responses": {
