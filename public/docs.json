@@ -107,7 +107,7 @@
         }
       }
     },
-    "/cases/${case_id}": {
+    "/cases/{case_id}": {
       "get": {
         "tags": ["cases"],
         "summary": "Get a case",
@@ -156,7 +156,7 @@
         }
       }
     },
-    "/cases/${case_id}/location_trail_points": {
+    "/cases/{case_id}/location_trail_points": {
       "post": {
         "tags": ["cases"],
         "summary": "Add location trail points",
@@ -191,7 +191,7 @@
         }
       }
     },
-    "/cases/${case_id}/location_trail_points/${locaction_trail_point_id}/redact": {
+    "/cases/{case_id}/location_trail_points/${locaction_trail_point_id}/redact": {
       "post": {
         "tags": ["cases"],
         "summary": "Redact a location trail point",
@@ -222,7 +222,7 @@
         }
       }
     },
-    "/cases/${case_id}/location_trail_points/${locaction_trail_point_id}/unredact": {
+    "/cases/{case_id}/location_trail_points/${locaction_trail_point_id}/unredact": {
       "post": {
         "tags": ["cases"],
         "summary": "Unredact a location trail point",
@@ -253,7 +253,7 @@
         }
       }
     },
-    "/cases/${case_id}/consent_to_make_public": {
+    "/cases/{case_id}/consent_to_make_public": {
       "post": {
         "tags": ["cases"],
         "summary": "Consent to make case public. Points that haven't been redacted will factor into hotspot determination.",
