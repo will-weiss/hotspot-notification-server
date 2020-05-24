@@ -7,13 +7,13 @@ This project aims to specify and implement a server to be deployed by health aut
 ## Table of Contents
 
 - [Setup](/SETUP.md)
-- [Glossary](#glossary)
-- [Model](#model)
-- [Roles And Permissions](#roles-and-permissions)
-- [Database Schema](#️database-schema)
+- [Glossary](glossary)
+- [Model](model)
+- [Roles And Permissions](roles-and-permissions)
+- [Database Schema](️database-schema)
 - [API Docs](http://hotspot-notification-server.herokuapp.com/docs.html)
 - [Deployment](/DEPLOYMENT.md)
-- [Milestones](#️milestones)
+- [Milestones](️milestones)
 
 ## Glossary
 
