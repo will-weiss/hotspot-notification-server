@@ -189,7 +189,7 @@
         }
       }
     },
-    "/cases/{case_id}/location_trail_points/${locaction_trail_point_id}/redact": {
+    "/cases/{case_id}/location_trail_points/{locaction_trail_point_id}/redact": {
       "post": {
         "tags": ["cases"],
         "summary": "Redact a location trail point",
@@ -220,7 +220,7 @@
         }
       }
     },
-    "/cases/{case_id}/location_trail_points/${locaction_trail_point_id}/unredact": {
+    "/cases/{case_id}/location_trail_points/{locaction_trail_point_id}/unredact": {
       "post": {
         "tags": ["cases"],
         "summary": "Unredact a location trail point",
