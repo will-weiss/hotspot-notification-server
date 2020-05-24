@@ -14,7 +14,7 @@
     }
   },
   "basePath": "/v1",
-  "schemes": ["http"],
+  "schemes": ["https", "http"],
   "paths": {
     "/session": {
       "post": {
