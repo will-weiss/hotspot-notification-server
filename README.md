@@ -9,11 +9,10 @@ This project aims to specify and implement a server to be deployed by health aut
 - [Setup](/SETUP.md)
 - [Glossary](#glossary)
 - [Model](#model)
-- [Roles And Permissions](#️roles-and-permissions)
+- [Roles And Permissions](#roles-and-permissions)
 - [Database Schema](#️database-schema)
 - [API Docs](http://hotspot-notification-server.herokuapp.com/docs.html)
 - [Deployment](/DEPLOYMENT.md)
-- [Milestones](#️milestones)
 - [Milestones](#️milestones)
 
 ## Glossary
@@ -68,7 +67,7 @@ Specific roles such as "admin" or "contact_tracer" aren't defined in this specif
 
 This would allow someone with the `admin` role to access all methods for all routes, while someone with the `contact_tracer` role can access all case related roles and can create auth codes. See [API Docs](http://hotspot-notification-server.herokuapp.com/docs.html) for more information on methods & routes.
 
-### Schema
+### Database Schema
 
 `id`, `created_ts`, and `updated_ts` are present for each model
 
