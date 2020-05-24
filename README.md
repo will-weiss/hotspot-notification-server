@@ -18,10 +18,10 @@ This project aims to specify and implement a server to be deployed by health aut
 
 ## Glossary
 
-**Staff**: An employee of a health authority. See [Roles and Permissions](#roles-and-permissions) for how health authorities may configure their system to control who can perform which functions.
-**Case**: An individual believed to be infected with COVID-19. While unused at the moment, an `infection_risk` parameter allows space in the model for some percentage chance that an individual is infected, perhaps based on their self-reported symptoms.
-**Location Trail Point**: A point in space and window in time where an infected individual was present. These may be sent by that individual's mobile device or entered by a staff member during a conversation with the infected individual.
-**Hotspot**: A region in space and window in time where infected individual(s) were present. Note that hotspots define an area, not just a point. See [Hotspot Determination](#hotspot-determination) for more information about how health authorities might configure how these are found.
+- **Staff**: An employee of a health authority. See [Roles and Permissions](#roles-and-permissions) for how health authorities may configure their system to control who can perform which functions.
+- **Case**: An individual believed to be infected with COVID-19. While unused at the moment, an `infection_risk` parameter allows space in the model for some percentage chance that an individual is infected, - perhaps based on their self-reported symptoms.
+- **Location Trail Point**: A point in space and window in time where an infected individual was present. These may be sent by that individual's mobile device or entered by a staff member during a conversation with the infected individual.
+- **Hotspot**: A region in space and window in time where infected individual(s) were present. Note that hotspots define an area, not just a point. See [Hotspot Determination](#hotspot-determination) for more information about how health authorities might configure how these are found.
 
 ## Model
 
