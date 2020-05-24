@@ -125,7 +125,11 @@ export async function openCase(ctx: IRouterContext): Promise<any> {
 }
 
 export async function getCases(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+  const created_before = ctx.query.created_before
+  return Object.assign(ctx.response, {
+    status: 200,
+    body: await cases.getCases(created_before)
+  })
 }
 
 export async function getCase(ctx: IRouterContext): Promise<any> {
@@ -188,9 +192,9 @@ export async function consentToMakePublic(ctx: IRouterContext): Promise<any> {
   // How else could we possibly verify this?
 
   const case_id = getPositiveIntegerParam(ctx, 'case_id')
-  const consent_to_make_public_receieved_by_staff_id = (ctx as any).loggedInStaffMember.id
+  const consent_to_make_public_received_by_staff_id = (ctx as any).loggedInStaffMember.id
 
-  const { found } = await cases.consentToMakePublic(case_id, consent_to_make_public_receieved_by_staff_id)
+  const { found } = await cases.consentToMakePublic(case_id, consent_to_make_public_received_by_staff_id)
   return Object.assign(ctx.response, {
     status: found ? 200 : 404
   })

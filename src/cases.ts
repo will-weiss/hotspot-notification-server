@@ -30,7 +30,7 @@ export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayloa
          , location_trail_points
       FROM cases
       JOIN agg_points on true
- LEFT JOIN staff on cases.consent_to_make_public_receieved_by_staff_id = staff.id
+ LEFT JOIN staff on cases.consent_to_make_public_received_by_staff_id = staff.id
      WHERE cases.id = ${case_id}
   `)
 
@@ -71,7 +71,7 @@ export async function consentToMakePublic(case_id: number, staff_id: number): Pr
   const numUpdated = await db.raw(`
     update cases
        set consent_to_make_public_received = true
-         , consent_to_make_public_receieved_by_staff_id = ?
+         , consent_to_make_public_received_by_staff_id = ?
          , consent_to_make_public_given_at = now()
      where id = ?
   `, [staff_id, case_id])
@@ -82,4 +82,23 @@ export async function consentToMakePublic(case_id: number, staff_id: number): Pr
 export async function delCase(case_id: number): Promise<{ found: boolean }> {
   const numDeleted = await db('cases').where({ id: case_id }).del()
   return { found: Boolean(numDeleted) }
+}
+
+export async function getCases(created_before?: string) {
+  // TODO: paginate using created_before
+
+  const result = await db.raw(`
+       SELECT cases.id
+            , patient_record_info
+            , infection_risk
+            , consent_to_make_public_received
+            , staff.username as consent_to_make_public_received_by_staff_username
+            , consent_to_make_public_given_at
+         FROM cases
+    LEFT JOIN staff on cases.consent_to_make_public_received_by_staff_id = staff.id
+     ORDER BY cases.created_at DESC
+        LIMIT 100
+  `)
+
+  return result.rows
 }

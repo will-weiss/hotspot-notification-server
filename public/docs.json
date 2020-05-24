@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "",
+    "description": "Work In Progress COVID-19 Hotspot Notification Server",
     "version": "0.0.1",
     "title": "Hotspot Notification Server",
     "termsOfService": "http://swagger.io/terms/",
@@ -55,6 +55,33 @@
           }
         }
       }
+    },
+    "/cases": {
+      "get": {
+        "tags": ["cases"],
+        "summary": "Gets most recent cases",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "created_before",
+            "description": "get only those cases before a given date",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CaseWithoutPoints"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -65,7 +92,18 @@
         "password": { "type": "string", "required": true, "example": "pw_contact_tracer_1" }
       }
     },
-    "Case": {
+    "CaseWithoutPoints": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "format": "int32" },
+        "patient_record_info": { "type": "object" },
+        "infection_risk": { "type": "float", "default": 1 },
+        "consent_to_make_public_received": { "type": "boolean" },
+        "consent_to_make_public_received_by_staff_username": { "type": "string" },
+        "consent_to_make_public_given_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "CaseWithPoints": {
       "type": "object",
       "properties": {
         "id": { "type": "integer", "format": "int32" },
