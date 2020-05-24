@@ -5,10 +5,10 @@ import * as permissions from './permissions'
 
 export const attachStaffMemberFromSession: IMiddleware = (
   async (ctx: IRouterContext, next) => {
-    const associatedStaffMember = await sessions.getAssociatedStaffMemberFromCookie(ctx.request.headers.cookie)
+    const loggedInStaffMember = await sessions.getLoggedInStaffMemberFromCookie(ctx.request.headers.cookie)
 
-    if (associatedStaffMember) {
-      Object.assign(ctx, { associatedStaffMember }) // tslint:disable-line:no-expression-statement
+    if (loggedInStaffMember) {
+      Object.assign(ctx, { loggedInStaffMember }) // tslint:disable-line:no-expression-statement
     }
 
     return next()
@@ -17,7 +17,7 @@ export const attachStaffMemberFromSession: IMiddleware = (
 
 export const verifyPermissions: IMiddleware = (
   async (ctx: IRouterContext, next) => {
-    const role = (ctx as any).associatedStaffMember?.role
+    const role = (ctx as any).loggedInStaffMember?.role
     const isPermitted = permissions.checkPermissions(role, ctx.method, ctx.path)
     if (isPermitted) return next()
     return Object.assign(ctx.response, { status: 403 })

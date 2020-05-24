@@ -1,33 +1,37 @@
-import * as knexPostgis from 'knex-postgis'
 import db from './db'
 import { addLocationTrailPointsToCase } from './locationTrailPoints'
 
 
 export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayload>> {
   const result = await db.raw(`
-    with lat_lon_points as (
-      SELECT
-        id,
-        start_ts,
-        end_ts,
-        ST_X(location::geometry) AS lon,
-        ST_Y(location::geometry) AS lat
-      FROM location_trail_points
-      where case_id = ${case_id}
+    WITH lat_lon_points as (
+        SELECT id
+             , start_ts
+             , end_ts
+             , ST_X(location::geometry) AS lon
+             , ST_Y(location::geometry) AS lat
+             , redacted
+          FROM location_trail_points
+         WHERE case_id = ${case_id}
+      ORDER BY start_ts
     ),
 
     agg_points as (
-      select json_agg(row_to_json(lat_lon_points)) as location_trail_points
-        from lat_lon_points
+      SELECT json_agg(row_to_json(lat_lon_points)) as location_trail_points
+        FROM lat_lon_points
     )
 
-    select id
+    SELECT cases.id
          , patient_record_info
          , infection_risk
+         , consent_to_make_public_received
+         , staff.username as consent_received_by_staff_username
+         , consent_given_at
          , location_trail_points
-      from cases
-      join agg_points on true
-     where id = ${case_id}
+      FROM cases
+      JOIN agg_points on true
+ LEFT JOIN staff on cases.consent_received_by_staff_id = staff.id
+     WHERE cases.id = ${case_id}
   `)
 
   return result.rows[0]
@@ -37,7 +41,7 @@ export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayloa
 // TODO: do this all on the database side, without needing to get the ID back
 // TODO: look over the datetime logic with a lot more strictness
 
-export async function postCase({ patient_record_info, location_trail_points }: CaseIncomingPayload): Promise<number> {
+export async function openCase({ patient_record_info, location_trail_points }: CaseIncomingPayload): Promise<{ id: number }> {
 
   let case_id: number // tslint:disable-line:no-let
 
@@ -60,5 +64,17 @@ export async function postCase({ patient_record_info, location_trail_points }: C
     }
   })
 
-  return case_id!
+  return { id: case_id! }
+}
+
+export async function consentToMakePublic(case_id: number, staff_id: number): Promise<{ found: boolean }> {
+  const numUpdated = await db.raw(`
+    update cases
+       set consent_to_make_public_received = true
+         , consent_received_by_staff_id = ?
+         , consent_given_at = now()
+     where id = ?
+  `, [staff_id, case_id])
+
+  return { found: Boolean(numUpdated) }
 }

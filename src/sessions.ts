@@ -46,16 +46,16 @@ function extractSessionKeyFromCookie(cookie: Maybe<string>): Maybe<string> {
   return sessionKey
 }
 
-async function getAssociatedStaffMemberFromSessionKey(sessionKey: string): Promise<Maybe<StaffMemberOutgoingPayload>> {
+async function getLoggedInStaffMemberFromSessionKey(sessionKey: string): Promise<Maybe<StaffMemberOutgoingPayload>> {
   const staffMemberId = await store.get(sessionKey)
   return staffMemberId && first(
     await staff.staffWithRoles().where('staff.id', staffMemberId)
   )
 }
 
-export async function getAssociatedStaffMemberFromCookie(cookie: Maybe<string>): Promise<Maybe<StaffMemberOutgoingPayload>> {
+export async function getLoggedInStaffMemberFromCookie(cookie: Maybe<string>): Promise<Maybe<StaffMemberOutgoingPayload>> {
   const sessionKey = extractSessionKeyFromCookie(cookie)
-  if (sessionKey) return getAssociatedStaffMemberFromSessionKey(sessionKey)
+  if (sessionKey) return getLoggedInStaffMemberFromSessionKey(sessionKey)
 }
 
 export async function removeSessionOfCookie(cookie: Maybe<string>): Promise<void> {

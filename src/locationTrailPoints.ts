@@ -49,3 +49,13 @@ export function addLocationTrailPointsToCase(
   if (trx) query = query.transacting(trx) // tslint:disable-line:no-expression-statement
   return query.insert(location_trail_points_insert)
 }
+
+export async function setLocationTrailPointRedactedState(case_id: number, location_trail_point_id: number, redacted: boolean): Promise<{ found: boolean }> {
+  const numUpdated = await (
+    db('location_trail_points')
+      .update({ redacted })
+      .where({ case_id, id: location_trail_point_id })
+  )
+
+  return { found: Boolean(numUpdated) }
+}

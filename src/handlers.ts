@@ -112,16 +112,16 @@ export async function createAuthcode(ctx: IRouterContext): Promise<any> {
   throw new Error('To Be Implemented')
 }
 
-export async function postCase(ctx: IRouterContext): Promise<any> {
+export async function openCase(ctx: IRouterContext): Promise<any> {
   const patient_record_info = ctx.request.body.patient_record_info || {}
   const location_trail_points = ctx.request.body.location_trail_points || []
 
-  const case_id: number = (
+  const covidCase = (
     locationTrailPoints.isLocationTrailPoints(location_trail_points),
-    await cases.postCase({ patient_record_info, location_trail_points })
+    await cases.openCase({ patient_record_info, location_trail_points })
   )
 
-  return Object.assign(ctx.response, { status: 200, body: { id: case_id! } })
+  return Object.assign(ctx.response, { status: 200, body: covidCase })
 }
 
 export async function getCases(ctx: IRouterContext): Promise<any> {
@@ -171,21 +171,36 @@ export async function postLocationTrailPoints(ctx: IRouterContext): Promise<any>
   })
 }
 
-export async function redactLocationTrailPoint(ctx: IRouterContext): Promise<any> {
-  throw new Error('To Be Implemented')
+export async function setLocationTrailPointRedactedState(ctx: IRouterContext): Promise<any> {
+  const redact = !ctx.path.endsWith('/unredact')
+
+  const case_id = getPositiveIntegerParam(ctx, 'case_id')
+  const location_trail_point_id = getPositiveIntegerParam(ctx, 'location_trail_point_id')
+  const { found } = await locationTrailPoints.setLocationTrailPointRedactedState(case_id, location_trail_point_id, redact)
+  return Object.assign(ctx.response, {
+    status: found ? 200 : 404
+  })
 }
 
 export async function consentToMakePublic(ctx: IRouterContext): Promise<any> {
-  // TODO: um, auth stuff
-  const id: number = fromBody(ctx, 'case_id', 'number')
-  await db('cases').where({ id }).update({ consent_to_make_public: true })
+  // TODO: handle mobile consent differently?
+  // For manual entry I think we just have to trust verbal consent entered by the staff member.
+  // How else could we possibly verify this?
+
+  const case_id = getPositiveIntegerParam(ctx, 'case_id')
+  const consent_received_by_staff_id = (ctx as any).loggedInStaffMember.id
+
+  const { found } = await cases.consentToMakePublic(case_id, consent_received_by_staff_id)
+  return Object.assign(ctx.response, {
+    status: found ? 200 : 404
+  })
 }
 
 export async function getAllHotspots(ctx: IRouterContext): Promise<any> {
   throw new Error('To Be Implemented')
 }
 
-export async function getPublichotspots(ctx: IRouterContext): Promise<any> {
+export async function getPublicHotspots(ctx: IRouterContext): Promise<any> {
   throw new Error('To Be Implemented')
 }
 
