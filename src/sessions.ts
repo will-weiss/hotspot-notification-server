@@ -1,7 +1,6 @@
 import { first } from 'lodash'
 import { IRouterContext } from 'koa-router'
 import * as uuid from 'node-uuid'
-import db from './db'
 import * as staff from './staff'
 
 

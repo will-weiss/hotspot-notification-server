@@ -8,7 +8,7 @@ export const staffWithRoles = () =>
     .select('staff.id', 'staff.username', 'roles.role')
     .join('roles', { 'staff.role_id': 'roles.id' })
 
-export async function insertStaff(username: string, password: string, role: string, contact_info?: any) {
+export async function insertStaff(username: string, password: string, role: string, contact_info?: any): Promise<any> {
   const hashed_password = await passwords.encrypt(password)
 
   const { rows } = await db.raw(`

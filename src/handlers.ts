@@ -144,8 +144,8 @@ export async function getCase(ctx: IRouterContext): Promise<any> {
 
 export async function delCase(ctx: IRouterContext): Promise<any> {
   const case_id = getPositiveIntegerParam(ctx, 'case_id')
-  await db('cases').where({ id: case_id }).del()
-  return Object.assign(ctx.response, { status: 200 })
+  const { found } = await cases.delCase(case_id)
+  return Object.assign(ctx.response, { status: found ? 200 : 404 })
 }
 
 export async function editPatientRecordInformation(ctx: IRouterContext): Promise<any> {
@@ -188,9 +188,9 @@ export async function consentToMakePublic(ctx: IRouterContext): Promise<any> {
   // How else could we possibly verify this?
 
   const case_id = getPositiveIntegerParam(ctx, 'case_id')
-  const consent_received_by_staff_id = (ctx as any).loggedInStaffMember.id
+  const consent_to_make_public_receieved_by_staff_id = (ctx as any).loggedInStaffMember.id
 
-  const { found } = await cases.consentToMakePublic(case_id, consent_received_by_staff_id)
+  const { found } = await cases.consentToMakePublic(case_id, consent_to_make_public_receieved_by_staff_id)
   return Object.assign(ctx.response, {
     status: found ? 200 : 404
   })

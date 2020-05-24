@@ -143,28 +143,32 @@ describe('the whole shebang', () => {
         .get(`/v1/cases/${createdCovidCaseId}`)
         .expect(200)
 
-      expect(response.body).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'location_trail_points')
-      expect(response.body.id).to.equal(createdCovidCaseId)
-      expect(response.body.patient_record_info).to.eql({ some: 'metadata' })
-      expect(response.body.infection_risk).to.equal(1) // default
-      expect(response.body.location_trail_points).to.be.an('array').that.has.length(2)
+      const covidCase = response.body
+      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'location_trail_points')
+      expect(covidCase.id).to.equal(createdCovidCaseId)
+      expect(covidCase.patient_record_info).to.eql({ some: 'metadata' })
+      expect(covidCase.infection_risk).to.equal(1) // default
+      expect(covidCase.consent_to_make_public_received).to.equal(false)
+      expect(covidCase.consent_to_make_public_received_by_staff_username).to.equal(null)
+      expect(covidCase.consent_to_make_public_given_at).to.equal(null)
+      expect(covidCase.location_trail_points).to.be.an('array').that.has.length(2)
 
-      expect(response.body.location_trail_points[0]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
-      expect(response.body.location_trail_points[0].id).to.be.a('number')
-      expect(response.body.location_trail_points[0].lat).to.equal(39.943436)
-      expect(response.body.location_trail_points[0].lon).to.equal(-76.993565)
-      expect(response.body.location_trail_points[0].start_ts).to.equal('2020-05-05T00:00:00-04:00')
-      expect(response.body.location_trail_points[0].end_ts).to.equal('2020-05-05T00:05:00-04:00')
+      expect(covidCase.location_trail_points[0]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts', 'redacted')
+      expect(covidCase.location_trail_points[0].id).to.be.a('number')
+      expect(covidCase.location_trail_points[0].lat).to.equal(39.943436)
+      expect(covidCase.location_trail_points[0].lon).to.equal(-76.993565)
+      expect(covidCase.location_trail_points[0].start_ts).to.equal('2020-05-05T00:00:00-04:00')
+      expect(covidCase.location_trail_points[0].end_ts).to.equal('2020-05-05T00:05:00-04:00')
 
-      expect(response.body.location_trail_points[1]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
-      expect(response.body.location_trail_points[1].id).to.be.a('number')
-      expect(response.body.location_trail_points[1].lat).to.equal(39.940623)
-      expect(response.body.location_trail_points[1].lon).to.equal(-76.992139)
-      expect(response.body.location_trail_points[1].start_ts).to.equal('2020-05-05T00:05:00-04:00')
-      expect(response.body.location_trail_points[1].end_ts).to.equal('2020-05-05T00:10:00-04:00')
+      expect(covidCase.location_trail_points[1]).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts', 'redacted')
+      expect(covidCase.location_trail_points[1].id).to.be.a('number')
+      expect(covidCase.location_trail_points[1].lat).to.equal(39.940623)
+      expect(covidCase.location_trail_points[1].lon).to.equal(-76.992139)
+      expect(covidCase.location_trail_points[1].start_ts).to.equal('2020-05-05T00:05:00-04:00')
+      expect(covidCase.location_trail_points[1].end_ts).to.equal('2020-05-05T00:10:00-04:00')
     })
 
-    let locationTrailPoints
+    let locationTrailPoints: ReadonlyArray<any>
 
     it('200s on POST to /cases/:case_id/location_trail_points with either a single point object or an array of point objects', async () => {
       await contactTracerAgent
@@ -200,13 +204,37 @@ describe('the whole shebang', () => {
       locationTrailPoints = response.body.location_trail_points
       expect(locationTrailPoints).to.have.length(5)
       locationTrailPoints.forEach((point: any) => {
-        expect(point).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
+        expect(point).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts', 'redacted')
         expect(point.id).to.be.a('number')
       })
     })
 
     it('200s on a POST to /cases/:case_id/location_trail_points/:location_trail_point_id/redact', async () => {
+      await contactTracerAgent
+        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points/${locationTrailPoints[2].id}/redact`)
+        .send({
+          lat: 40,
+          lon: -80,
+          start_ts: '2020-05-05T00:10:00-04:00',
+          end_ts: '2020-05-05T00:15:00-04:00',
+        })
+        .expect(200)
+    })
 
+    it('200s on a POST to /cases/:case_id/consent_to_make_public', async () => {
+      await contactTracerAgent
+        .post(`/v1/cases/${createdCovidCaseId}/consent_to_make_public`)
+        .expect(200)
+    })
+
+    it('200s on a GET to /cases/:case_id showing the redacted point and consent information', async () => {
+      const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`).expect(200)
+
+      const covidCase = response.body
+      expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'location_trail_points')
+      expect(covidCase.consent_to_make_public_received).to.equal(true)
+      expect(covidCase.consent_to_make_public_received_by_staff_username).to.equal('contact_tracer_1')
+      expect(covidCase.consent_to_make_public_given_at).to.be.a('string').that.satisfies((s: string) => /^(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z$/)
     })
 
     it('200s and ends the session on a DELETE to /session', async () => {
