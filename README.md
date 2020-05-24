@@ -9,11 +9,15 @@ These location trails may be sent from an individual's mobile device having been
 
 ## Table of Contents
 
-- [Glossary](#glossary)
 - [Setup](/SETUP.md)
-- [Logins and Accounts](#logins-and-accounts)
-- [Deployment](#️deployment)
-
+- [Glossary](#glossary)
+- [Model](#model)
+- [Roles And Permissions](#️roles-and-permissions)
+- [Database Schema](#️database-schema)
+- [API Spec](http://hotspot-notification-server.herokuapp.com/docs.html)
+<!-- - [Background Processes](http://hotspot-notification-server.herokuapp.com/docs.html) -->
+- [Deployment](/DEPLOYMENT.md)
+- [Milestones](#️milestones)
 
 ## Glossary
 
@@ -22,33 +26,6 @@ These location trails may be sent from an individual's mobile device having been
 **Case**: A
 **Location Trail Point**: A point in space and window in time where an infected individual was present. These may be sent by that individual's mobile device or entered by a staff member during a conversation with the infected individual.
 **Self Reporting**
-
-
-## Milestones
-
-- [ ] Manual Data Ingestion
-  - [ ] Case Creation
-  - [ ] Redaction & Consent
-  - [ ] Simple Algorithm for Hotspot Determination
-  - [ ] Hotspot Notification
-- [ ] Mobile Data Ingestion
-  - [ ] Auth Code Generation
-  - [ ] Device Attestation
-- [ ] Model Improvements
-  - [ ] Configurable Algorithm for Hotspot Determination
-  - [ ] Self Reporting
-  - [ ] Infection Risk
-- [ ] Development & Deployment
-  - [ ] CI/CD Pipeline
-  - [ ] Deployment Guide
-  - [ ] Automated Setup Scripts
-
-
-## Roles and Permissions
-
-TODO
-to access  Note that specific roles such as "admin" or "contact_tracer" aren't defined in this specification, accounting for different but that this implementation allows arbitrary roles/perm
-
 
 ## Model
 
@@ -65,6 +42,17 @@ Open Case -> Case Management -> Infection Risk Calculation -> Hotspot Determinat
 #### Hotspot Determination
 
 #### Hotspot Notification
+
+
+## Roles and Permissions
+
+TODO
+to access  Note that specific roles such as "admin" or "contact_tracer" aren't defined in this specification, accounting for different but that this implementation allows arbitrary roles/perm
+
+
+
+
+
 
 ### Schema
 
@@ -150,30 +138,30 @@ past_hotspots?
 - `GET`    `/hotspots?past=$timestamp&pubished=$published&unpublished=$unpublished`
 - `POST`   `/hotspots/$hotspot_id/publish`
 
-
 ## Background Processes
 
 <!-- Cleanup old location points? -->
 
-Commit order
-- base db migrations ✅
-- koa app skeleton  ✅
-- /cases (sans auth code) ✅
-- /session ✅
-- deploy ✅
-- Fill in some gaps ✅
-- doc update
-- CI/CD
-- Install
-- hotspot calculation
-- authcode workflow
-- Self Reporting?
-- Device Attestation
-- Cleanup old location points
-
 ## Deployment
 
+## Milestones
 
+- [ ] Manual Data Ingestion
+  - [ ] Case Creation
+  - [ ] Redaction & Consent
+  - [ ] Simple Algorithm for Hotspot Determination
+  - [ ] Hotspot Notification
+- [ ] Mobile Data Ingestion
+  - [ ] Auth Code Generation
+  - [ ] Device Attestation
+- [ ] Model Improvements
+  - [ ] Configurable Algorithm for Hotspot Determination
+  - [ ] Self Reporting
+  - [ ] Infection Risk
+- [ ] Development & Deployment
+  - [ ] CI/CD Pipeline
+  - [ ] Deployment Guide
+  - [ ] Automated Setup Scripts
 
 
 # Random lines to remember

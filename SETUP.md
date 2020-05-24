@@ -26,6 +26,12 @@ Get [postgres](https://www.postgresql.org/).
 > brew install postgresql
 ```
 
+Get [PostGIS](https://postgis.net/).
+
+```bash
+> brew install postgis
+```
+
 ## Setup
 
 Use the correct node version and install node_modules.
@@ -203,4 +209,3 @@ See that consent was given.
 
   # Response is {"id":1,"patient_record_info":{"some":"metadata"},"infection_risk":1,"consent_to_make_public_received":true,"consent_to_make_public_received_by_staff_username":"contact_tracer_1","consent_to_make_public_given_at":"2020-05-24T15:01:30.640Z","location_trail_points":[{"id":1,"start_ts":"2020-05-05T00:10:00-04:00","end_ts":"2020-05-05T00:15:00-04:00","lon":-80,"lat":40,"redacted":false},{"id":2,"start_ts":"2020-05-05T00:15:00-04:00","end_ts":"2020-05-05T00:20:00-04:00","lon":-80.222,"lat":40,"redacted":true},{"id":3,"start_ts":"2020-05-05T00:20:00-04:00","end_ts":"2020-05-05T00:25:00-04:00","lon":-80.444,"lat":40,"redacted":false}]}
 ```
-
