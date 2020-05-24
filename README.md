@@ -1,14 +1,72 @@
-# Reference COVID-19 Case Management & Hotspot Notification Server
+# COVID-19 Case Management & Hotspot Notification Server
 
-This server project aims to be deployed by health authorities to identify and notify users of COVID-19 hotspots based on timestamped location trails of possibly infected individuals. These location trails may be sent from an individual's mobile device having been collected by GPS and reviewed during a conversation with a contact tracer to redact private information, or manually input by a contact tracer based on a conversation with an individual.
+**_Note: This project is under active development and not ready for production use._**
 
-# Model
+This project aims to specify and implement a server to be deployed by health authorities to manage COVID-19 cases and notify users of hotspots based on reported location trails.
 
-## Progression
 
-Case & Location Trail Creation/Review -> Infection Risk Calculation -> Hotspot Determination -> Hotspot Notification
+These location trails may be sent from an individual's mobile device having been collected by GPS and reviewed during a conversation with a contact tracer to redact private information, or manually input by a contact tracer based on a conversation with an individual.
 
-## Schema
+## Table of Contents
+
+- [Glossary](#glossary)
+- [Setup](/SETUP.md)
+- [Logins and Accounts](#logins-and-accounts)
+- [Deployment](#️deployment)
+
+
+## Glossary
+
+**Hotspot**: A region in space and window in time where infected individual(s) were present. See [Hotspot Determination](#hotspot-determination) for more information about how health authorities might configure how these are found.
+**Staff**: An employee of a health authority. See [Roles and Permissions](#roles-and-permissions) for how health authorities may configure their system to control who can perform which functions.
+**Case**: A
+**Location Trail Point**: A point in space and window in time where an infected individual was present. These may be sent by that individual's mobile device or entered by a staff member during a conversation with the infected individual.
+**Self Reporting**
+
+
+## Milestones
+
+- [ ] Manual Data Ingestion
+  - [ ] Case Creation
+  - [ ] Redaction & Consent
+  - [ ] Simple Algorithm for Hotspot Determination
+  - [ ] Hotspot Notification
+- [ ] Mobile Data Ingestion
+  - [ ] Auth Code Generation
+  - [ ] Device Attestation
+- [ ] Model Improvements
+  - [ ] Configurable Algorithm for Hotspot Determination
+  - [ ] Self Reporting
+  - [ ] Infection Risk
+- [ ] Development & Deployment
+  - [ ] CI/CD Pipeline
+  - [ ] Deployment Guide
+  - [ ] Automated Setup Scripts
+
+
+## Roles and Permissions
+
+TODO
+to access  Note that specific roles such as "admin" or "contact_tracer" aren't defined in this specification, accounting for different but that this implementation allows arbitrary roles/perm
+
+
+## Model
+
+### Progression
+
+Open Case -> Case Management -> Infection Risk Calculation -> Hotspot Determination -> Hotspot Notification
+
+#### Open Case
+
+#### Case Management
+
+#### Infection Risk Calculation
+
+#### Hotspot Determination
+
+#### Hotspot Notification
+
+### Schema
 
 - id, created_ts, updated_ts are present for each model
 
@@ -103,7 +161,7 @@ Commit order
 - /cases (sans auth code) ✅
 - /session ✅
 - deploy ✅
-- Fill in some gaps
+- Fill in some gaps ✅
 - doc update
 - CI/CD
 - Install
@@ -112,6 +170,8 @@ Commit order
 - Self Reporting?
 - Device Attestation
 - Cleanup old location points
+
+## Deployment
 
 
 

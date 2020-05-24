@@ -18,7 +18,7 @@ describe('the whole shebang', () => {
 
   before(() => seed(db))
   before(permissions.readPermissionsIntoMemory)
-  before(() => app = server.listen(5004))
+  before(() => app = server.listen(5005))
   before(() => {
     adminAgent = request.agent(app)
     contactTracerAgent = request.agent(app)
@@ -164,6 +164,8 @@ describe('the whole shebang', () => {
       expect(response.body.location_trail_points[1].end_ts).to.equal('2020-05-05T00:10:00-04:00')
     })
 
+    let locationTrailPoints
+
     it('200s on POST to /cases/:case_id/location_trail_points with either a single point object or an array of point objects', async () => {
       await contactTracerAgent
         .post(`/v1/cases/${createdCovidCaseId}/location_trail_points`)
@@ -195,11 +197,16 @@ describe('the whole shebang', () => {
 
       const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`)
 
-      expect(response.body.location_trail_points).to.have.length(5)
-      response.body.location_trail_points.forEach((point: any) => {
+      locationTrailPoints = response.body.location_trail_points
+      expect(locationTrailPoints).to.have.length(5)
+      locationTrailPoints.forEach((point: any) => {
         expect(point).to.have.all.keys('id', 'lat', 'lon', 'start_ts', 'end_ts')
         expect(point.id).to.be.a('number')
       })
+    })
+
+    it('200s on a POST to /cases/:case_id/location_trail_points/:location_trail_point_id/redact', async () => {
+
     })
 
     it('200s and ends the session on a DELETE to /session', async () => {

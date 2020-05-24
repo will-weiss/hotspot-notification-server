@@ -5,6 +5,7 @@ exports.up = async knex => {
     table.increments('id').primary()
     table.json('patient_record_info')
     table.float('infection_risk').defaultTo(1)
+    table.boolean('consent_to_make_public').defaultTo(false)
     table.timestamp('updated_at').defaultTo(knex.fn.now())
     table.timestamp('created_at').defaultTo(knex.fn.now())
   })

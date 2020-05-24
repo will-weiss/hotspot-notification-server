@@ -175,6 +175,12 @@ export async function redactLocationTrailPoint(ctx: IRouterContext): Promise<any
   throw new Error('To Be Implemented')
 }
 
+export async function consentToMakePublic(ctx: IRouterContext): Promise<any> {
+  // TODO: um, auth stuff
+  const id: number = fromBody(ctx, 'case_id', 'number')
+  await db('cases').where({ id }).update({ consent_to_make_public: true })
+}
+
 export async function getAllHotspots(ctx: IRouterContext): Promise<any> {
   throw new Error('To Be Implemented')
 }
