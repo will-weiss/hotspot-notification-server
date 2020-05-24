@@ -159,7 +159,7 @@
     "/cases/${case_id}/location_trail_points": {
       "post": {
         "tags": ["cases"],
-        "summary": "Get a case",
+        "summary": "Add location trail points",
         "produces": [
           "application/json"
         ],
@@ -173,9 +173,12 @@
           {
             "in": "body",
             "name": "body",
-            "description": "A new location trail point",
+            "description": "New location trail points",
             "schema": {
-              "$ref": "#/definitions/NewLocationTrailPoint"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/NewLocationTrailPoint"
+              }
             }
           }
         ],
