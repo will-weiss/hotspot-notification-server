@@ -27,6 +27,7 @@ export async function getCase(case_id: number): Promise<Maybe<CaseOutgoingPayloa
          , consent_to_make_public_received
          , staff.username as consent_to_make_public_received_by_staff_username
          , consent_to_make_public_given_at
+         , cases.created_at
          , location_trail_points
       FROM cases
       JOIN agg_points on true
@@ -94,6 +95,7 @@ export async function getCases(created_before?: string) {
             , consent_to_make_public_received
             , staff.username as consent_to_make_public_received_by_staff_username
             , consent_to_make_public_given_at
+            , cases.created_at
          FROM cases
     LEFT JOIN staff on cases.consent_to_make_public_received_by_staff_id = staff.id
      ORDER BY cases.created_at DESC

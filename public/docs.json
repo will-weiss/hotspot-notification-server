@@ -293,7 +293,8 @@
         "infection_risk": { "type": "number", "default": 1 },
         "consent_to_make_public_received": { "type": "boolean" },
         "consent_to_make_public_received_by_staff_username": { "type": "string" },
-        "consent_to_make_public_given_at": { "type": "string", "format": "date-time" }
+        "consent_to_make_public_given_at": { "type": "string", "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" }
       }
     },
     "CaseWithPoints": {
@@ -305,6 +306,7 @@
         "consent_to_make_public_received": { "type": "boolean" },
         "consent_to_make_public_received_by_staff_username": { "type": "string" },
         "consent_to_make_public_given_at": { "type": "string", "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
         "location_trail_points": {
           "type": "array",
           "items": {
