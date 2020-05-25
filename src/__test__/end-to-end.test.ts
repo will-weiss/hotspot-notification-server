@@ -1,6 +1,5 @@
 // tslint:disable:no-let
 // tslint:disable:no-expression-statement
-
 import { expect } from 'chai'
 import * as request from 'supertest'
 import * as permissions from '../permissions'
@@ -9,7 +8,7 @@ import server from '../server'
 const { seed } = require('../../db/seeds/two_role_three_user')
 
 
-describe('the whole shebang', () => {
+describe('end-to-end', () => {
 
   let app: any
   let adminAgent: request.SuperTest<request.Test>
