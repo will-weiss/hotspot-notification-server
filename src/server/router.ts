@@ -5,7 +5,7 @@ import * as middleware from './middleware'
 import * as handlers from './handlers'
 
 
-const v1Router = new Router()
+const v1ApiRouter = new Router()
   .get('/session', handlers.checkSession)
   .post('/session', handlers.createSession)
   .del('/session', handlers.delSession)
@@ -37,7 +37,7 @@ const v1Router = new Router()
 const router = new Router()
   .get(`/health-check`, ({ response }) => Object.assign(response, { status: 200, body: 'OK' }))
   .redirect('/', '/docs.html')
-  .use('/v1', middleware.attachStaffMemberFromSession, middleware.verifyPermissions, v1Router.routes(), v1Router.allowedMethods())
+  .use('/api/v1', middleware.attachStaffMemberFromSession, middleware.verifyPermissions, v1ApiRouter.routes(), v1ApiRouter.allowedMethods())
 
 
 // tslint:disable-next-line:no-expression-statement
