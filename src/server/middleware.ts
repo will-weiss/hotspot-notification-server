@@ -5,6 +5,7 @@ import * as permissions from './permissions'
 
 export const attachStaffMemberFromSession: IMiddleware = (
   async (ctx: IRouterContext, next) => {
+
     const loggedInStaffMember = await sessions.getLoggedInStaffMemberFromCookie(ctx.request.headers.cookie)
 
     if (loggedInStaffMember) {
@@ -30,7 +31,8 @@ export const trackRequests: IMiddleware = (
     /* tslint:disable:no-expression-statement */
     try { await next() } catch (err) {
       const status = err.status || 500
-      Object.assign(response, { status, body: err.message })
+      Object.assign(response, { status })
+      if (err.message) Object.assign(response, { body: err.message })
       if (status >= 500) console.error(err)
     }
     /* tslint:enable:no-expression-statement */

@@ -33,7 +33,7 @@ export async function createSessionForStaffMember(ctx: IRouterContext, staff_mem
   const sessionKey = uuid.v4()
   return (
     await store.set(sessionKey, staff_member_id),
-    ctx.set('Set-Cookie', `${cookieKey}=${sessionKey}; Max-Age=86400000`) // TODO: Please some security person analyze this
+    ctx.set('Set-Cookie', `${cookieKey}=${sessionKey}; Max-Age=86400000; Path=/`) // TODO: Please some security person analyze this
   )
 }
 

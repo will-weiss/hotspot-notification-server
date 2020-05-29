@@ -36,21 +36,38 @@ export async function checkSession(ctx: IRouterContext): Promise<any> {
 }
 
 export async function createSession(ctx: IRouterContext): Promise<any> {
-  const username: string = fromBody(ctx, 'username', 'string')
-  const password: string = fromBody(ctx, 'password', 'string')
+  const referer = ctx.request.headers.referer || ctx.request.headers.referrer
+  const fromLoginPage = !!referer && referer.endsWith('/login')
 
-  const [staffMember] = await db('staff').select('id', 'hashed_password').where({ username })
-  if (!staffMember) throw { status: 404, message: `No user (${username})` }
+  async function runCreateSession() {
+    const username: string = fromBody(ctx, 'username', 'string')
+    const password: string = fromBody(ctx, 'password', 'string')
 
-  const match = await passwords.compare(password, staffMember.hashed_password)
+    const [staffMember] = await db('staff').select('id', 'hashed_password').where({ username })
+    if (!staffMember) throw { status: 404, message: `No user (${username})` }
 
-  if (match) {
-    return (
-      await sessions.createSessionForStaffMember(ctx, staffMember.id),
-      Object.assign(ctx.response, { status: 200 })
-    )
-  } else {
-    return Object.assign(ctx.response, { status: 401 })
+    const match = await passwords.compare(password, staffMember.hashed_password)
+
+    if (match) {
+      await sessions.createSessionForStaffMember(ctx, staffMember.id) // tslint:disable-line:no-expression-statement
+      throw { status: 200 }
+    } else {
+      throw { status: 401 }
+    }
+  }
+
+  if (!fromLoginPage) return runCreateSession()
+
+  try {
+    await runCreateSession()
+  } catch (err) {
+    if (err.status === 200) {
+      ctx.set('Location', '/case-management')
+      return Object.assign(ctx.response, { status: 302 })
+    } else {
+      ctx.set('Location', `/login?error=${encodeURIComponent(err.message)}`)
+      return Object.assign(ctx.response, { status: 302 })
+    }
   }
 }
 

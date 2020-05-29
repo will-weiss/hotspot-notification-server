@@ -97,7 +97,7 @@ Log in as a contact tracer, saving your cookie to a file.
 
 ```bash
 > COOKIE_JAR=$(mktemp)
-> curl localhost:5004/v1/session \
+> curl localhost:5004/api/v1/session \
   --request POST \
   --header 'Content-Type: application/json' \
   --cookie-jar $COOKIE_JAR \
@@ -109,7 +109,7 @@ Log in as a contact tracer, saving your cookie to a file.
 Open a case.
 
 ```bash
-> curl localhost:5004/v1/cases \
+> curl localhost:5004/api/v1/cases \
   --request POST \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR \
@@ -139,7 +139,7 @@ Open a case.
 Add an additional point.
 
 ```bash
-> curl localhost:5004/v1/cases/1/location_trail_points \
+> curl localhost:5004/api/v1/cases/1/location_trail_points \
   --request POST \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR \
@@ -158,7 +158,7 @@ Add an additional point.
 See that the case has the new point.
 
 ```bash
-> curl localhost:5004/v1/cases/1 \
+> curl localhost:5004/api/v1/cases/1 \
   --request GET \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR
@@ -169,7 +169,7 @@ See that the case has the new point.
 Redact the second point.
 
 ```bash
-> curl localhost:5004/v1/cases/1/location_trail_points/2/redact \
+> curl localhost:5004/api/v1/cases/1/location_trail_points/2/redact \
   --request POST \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR
@@ -180,7 +180,7 @@ Redact the second point.
 See that the point is redacted.
 
 ```bash
-> curl localhost:5004/v1/cases/1 \
+> curl localhost:5004/api/v1/cases/1 \
   --request GET \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR
@@ -191,7 +191,7 @@ See that the point is redacted.
 Consent to make the unredacted points in the case public.
 
 ```bash
-> curl localhost:5004/v1/cases/1/consent_to_make_public \
+> curl localhost:5004/api/v1/cases/1/consent_to_make_public \
   --request POST \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR
@@ -202,7 +202,7 @@ Consent to make the unredacted points in the case public.
 See that consent was given.
 
 ```bash
-> curl localhost:5004/v1/cases/1 \
+> curl localhost:5004/api/v1/cases/1 \
   --request GET \
   --header 'Content-Type: application/json' \
   --cookie $COOKIE_JAR

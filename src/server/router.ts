@@ -3,6 +3,7 @@ import * as send from 'koa-send'
 import { readdirSync } from 'fs'
 import * as middleware from './middleware'
 import * as handlers from './handlers'
+import views from './views'
 
 
 const v1ApiRouter = new Router()
@@ -33,15 +34,30 @@ const v1ApiRouter = new Router()
   .get('/settings', handlers.getSettings)
   .put('/settings/:setting_id', handlers.putSetting)
 
+const viewsRouter = new Router()
+  .get('/login', ctx => {
+    const { loggedInStaffMember } = ctx as any
+    if (loggedInStaffMember) return ctx.redirect('/case-management')
+    return views(ctx, 'login')
+  })
+  .get('/case-management', ctx => {
+    const { loggedInStaffMember } = ctx as any
+    if (!loggedInStaffMember) return ctx.redirect('/login')
+    return views(ctx, 'case-management')
+  })
 
 const router = new Router()
   .get(`/health-check`, ({ response }) => Object.assign(response, { status: 200, body: 'OK' }))
   .redirect('/', '/docs.html')
-  .use('/api/v1', middleware.attachStaffMemberFromSession, middleware.verifyPermissions, v1ApiRouter.routes(), v1ApiRouter.allowedMethods())
-
 
 // tslint:disable-next-line:no-expression-statement
 readdirSync(process.cwd() + '/public').forEach(fileName =>
   router.get('/' + fileName, ctx => send(ctx, `/public/${fileName}`)))
+
+router
+  .use(middleware.attachStaffMemberFromSession)
+  .use('/api/v1', middleware.verifyPermissions, v1ApiRouter.routes(), v1ApiRouter.allowedMethods())
+  .use(viewsRouter.routes())
+  .use(viewsRouter.allowedMethods())
 
 export default router

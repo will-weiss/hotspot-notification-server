@@ -3,11 +3,12 @@
   "verbose": true,
   "watch": [
     "compiled/",
-    "public/"
+    "public/",
+    "views/"
   ],
   "ignore": [
     "*.js.map",
     "*.spec.js"
   ],
-  "ext": "js json ts"
+  "ext": "js json ts mustache"
 }

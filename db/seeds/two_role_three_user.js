@@ -1,5 +1,5 @@
 const { first } = require('lodash')
-const passwords = require('../../compiled/passwords')
+const passwords = require('../../compiled/server/passwords')
 
 
 exports.seed = async db => {
@@ -18,8 +18,8 @@ exports.seed = async db => {
   await db('permissions').insert({ role_id: admin_role_id, method_pattern: '*', route_pattern: '*' })
 
   // Contact tracers can only generate auth codes and interact with cases
-  await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/v1/authcode/create' })
-  await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: '*', route_pattern: '/v1/cases*' })
+  await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: 'POST', route_pattern: '/api/v1/authcode/create' })
+  await db('permissions').insert({ role_id: contact_tracer_role_id, method_pattern: '*', route_pattern: '/api/v1/cases*' })
 
   // Add a contact tracer with an encrypted password
   await db('staff').insert([

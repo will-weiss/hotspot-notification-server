@@ -59,11 +59,11 @@ Cases and their location trail points more than 21 days old are cleaned up perio
 
 Specific roles such as "admin" or "contact_tracer" aren't defined in this specification. Instead, roles and permissions may be set up by a database administrator to suit a particular health authority's needs. A basic setup with 2 user roles might look like this.
 
-|     role       | method_pattern |     route_pattern   |
-|----------------|----------------|---------------------|
-| admin          | *              | *                   |
-| contact_tracer | *              | /v1/cases*          |
-| contact_tracer | POST           | /v1/authcode/create |
+|     role       | method_pattern |     route_pattern       |
+|----------------|----------------|-------------------------|
+| admin          | *              | *                       |
+| contact_tracer | *              | /api/v1/cases*          |
+| contact_tracer | POST           | /api/v1/authcode/create |
 
 This would allow someone with the `admin` role to access all methods for all routes, while someone with the `contact_tracer` role can access all case related roles and can create auth codes. See [API Docs](http://hotspot-notification-server.herokuapp.com/docs.html) for more information on methods & routes.
 

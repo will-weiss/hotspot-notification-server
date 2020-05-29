@@ -14,6 +14,7 @@ COPY tsconfig.json .
 COPY tslint.json .
 COPY test_setup.js .
 COPY public/ /usr/hotspot-notification-server/public
+COPY views/ /usr/hotspot-notification-server/views
 COPY src/ /usr/hotspot-notification-server/src
 
 RUN npm run lint

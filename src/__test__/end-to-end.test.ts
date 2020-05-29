@@ -30,7 +30,7 @@ describe('end-to-end', () => {
   describe('contact_tracer', () => {
     it('400s when POST to /session has no password', done => {
       contactTracerAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ username: 'contact_tracer_1' })
         .expect(400)
         .end(done)
@@ -38,7 +38,7 @@ describe('end-to-end', () => {
 
     it('400s when POST to /session has no username', done => {
       contactTracerAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ password: 'pw_contact_tracer_1' })
         .expect(400)
         .end(done)
@@ -46,7 +46,7 @@ describe('end-to-end', () => {
 
     it('401s when POST to /session has incorrect password', done => {
       contactTracerAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ username: 'contact_tracer_1', password: 'whoops-pw_contact_tracer_1' })
         .expect(401)
         .end(done)
@@ -54,7 +54,7 @@ describe('end-to-end', () => {
 
     it('404s when POST to /session is nonexistent user', done => {
       contactTracerAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ username: 'contact_tracer_77', password: 'pw_contact_tracer_1' })
         .expect(404)
         .end(done)
@@ -62,7 +62,7 @@ describe('end-to-end', () => {
 
     it('200s when POST to /session has correct username and password', done => {
       contactTracerAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ username: 'contact_tracer_1', password: 'pw_contact_tracer_1' })
         .expect(200)
         .expect(res => {
@@ -73,7 +73,7 @@ describe('end-to-end', () => {
 
     it('403s when a not logged in staff member attempts to POST to /cases', done => {
       notLoggedInAgent
-        .post('/v1/cases')
+        .post('/api/v1/cases')
         .send({
           patient_record_info: { some: 'metadata' },
           location_trail_points: [
@@ -99,7 +99,7 @@ describe('end-to-end', () => {
 
     it('200s and adds a case on a POST /cases from a logged in staff member with permission', async () => {
       const response = await contactTracerAgent
-        .post('/v1/cases')
+        .post('/api/v1/cases')
         .send({
           patient_record_info: { some: 'metadata' },
           location_trail_points: [
@@ -139,7 +139,7 @@ describe('end-to-end', () => {
 
     it('200s and returns the case and its location points in lat/lon format on a GET to /cases/$case_id', async () => {
       const response = await contactTracerAgent
-        .get(`/v1/cases/${createdCovidCaseId}`)
+        .get(`/api/v1/cases/${createdCovidCaseId}`)
         .expect(200)
 
       const covidCase = response.body
@@ -172,7 +172,7 @@ describe('end-to-end', () => {
 
     it('200s on POST to /cases/:case_id/location_trail_points with either a single point object or an array of point objects', async () => {
       await contactTracerAgent
-        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points`)
+        .post(`/api/v1/cases/${createdCovidCaseId}/location_trail_points`)
         .send({
           lat: 40,
           lon: -80,
@@ -182,7 +182,7 @@ describe('end-to-end', () => {
         .expect(200)
 
       await contactTracerAgent
-        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points`)
+        .post(`/api/v1/cases/${createdCovidCaseId}/location_trail_points`)
         .send([
           {
             lat: 72,
@@ -199,7 +199,7 @@ describe('end-to-end', () => {
         ])
         .expect(200)
 
-      const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`)
+      const response = await contactTracerAgent.get(`/api/v1/cases/${createdCovidCaseId}`)
 
       locationTrailPoints = response.body.location_trail_points
       expect(locationTrailPoints).to.have.length(5)
@@ -211,7 +211,7 @@ describe('end-to-end', () => {
 
     it('200s on a POST to /cases/:case_id/location_trail_points/:location_trail_point_id/redact', async () => {
       await contactTracerAgent
-        .post(`/v1/cases/${createdCovidCaseId}/location_trail_points/${locationTrailPoints[2].id}/redact`)
+        .post(`/api/v1/cases/${createdCovidCaseId}/location_trail_points/${locationTrailPoints[2].id}/redact`)
         .send({
           lat: 40,
           lon: -80,
@@ -223,12 +223,12 @@ describe('end-to-end', () => {
 
     it('200s on a POST to /cases/:case_id/consent_to_make_public', async () => {
       await contactTracerAgent
-        .post(`/v1/cases/${createdCovidCaseId}/consent_to_make_public`)
+        .post(`/api/v1/cases/${createdCovidCaseId}/consent_to_make_public`)
         .expect(200)
     })
 
     it('200s on a GET to /cases/:case_id showing the redacted point and consent information', async () => {
-      const response = await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`).expect(200)
+      const response = await contactTracerAgent.get(`/api/v1/cases/${createdCovidCaseId}`).expect(200)
 
       const covidCase = response.body
       expect(covidCase).to.have.all.keys('id', 'patient_record_info', 'infection_risk', 'created_by_staff_username', 'consent_to_make_public_received', 'consent_to_make_public_received_by_staff_username', 'consent_to_make_public_given_at', 'created_at', 'location_trail_points')
@@ -238,15 +238,15 @@ describe('end-to-end', () => {
     })
 
     it('200s and ends the session on a DELETE to /session', async () => {
-      await contactTracerAgent.del(`/v1/session`)
-      await contactTracerAgent.get(`/v1/cases/${createdCovidCaseId}`).expect(403)
+      await contactTracerAgent.del(`/api/v1/session`)
+      await contactTracerAgent.get(`/api/v1/cases/${createdCovidCaseId}`).expect(403)
     })
   })
 
   describe('admin', () => {
     it('200s when POST to /session has correct username and password', done => {
       adminAgent
-        .post('/v1/session')
+        .post('/api/v1/session')
         .send({ username: 'admin', password: 'pw_admin' })
         .expect(200)
         .expect(res => {
@@ -256,7 +256,7 @@ describe('end-to-end', () => {
     })
 
     it('200s for a GET to /staff', async () => {
-      const response = await adminAgent.get(`/v1/staff`).expect(200)
+      const response = await adminAgent.get(`/api/v1/staff`).expect(200)
       const staff = response.body
       expect(staff).to.be.an('array').that.has.length(3)
       const admin = staff.find((p: any) => p.role === 'admin' && p.username === 'admin')
@@ -273,7 +273,7 @@ describe('end-to-end', () => {
     it('200s for POST to /staff when all fields present', async () => {
       const response = await (
         adminAgent
-          .post(`/v1/staff/contact_tracer`)
+          .post(`/api/v1/staff/contact_tracer`)
           .send({ username: 'new_user', password: 'okyesverynice' })
           .expect(200)
       )
@@ -292,7 +292,7 @@ describe('end-to-end', () => {
 
     it('404s for DELETE to /staff/:role/:staff_id when staff id is of a different role', async () => {
       await adminAgent
-        .del(`/v1/staff/admin/${createdContactTracerId}`)
+        .del(`/api/v1/staff/admin/${createdContactTracerId}`)
         .expect(404)
 
       const [staffMemberStillPresent] = await db('staff').select('*').where('id', createdContactTracerId)
@@ -302,7 +302,7 @@ describe('end-to-end', () => {
     it('200s for DELETE to /staff/:role/:staff_id when the staff member with that id has that role', async () => {
       await (
         adminAgent
-          .del(`/v1/staff/contact_tracer/${createdContactTracerId}`)
+          .del(`/api/v1/staff/contact_tracer/${createdContactTracerId}`)
           .expect(200)
       )
 
@@ -312,7 +312,7 @@ describe('end-to-end', () => {
 
     it('400s for POST to /staff/:role when role does not exist', done => {
       adminAgent
-        .post(`/v1/staff/plumber`)
+        .post(`/api/v1/staff/plumber`)
         .send({ username: 'new_user_nope', password: 'okyesverynice' })
         .expect(400, 'role (plumber) does not exist')
         .end(done)
