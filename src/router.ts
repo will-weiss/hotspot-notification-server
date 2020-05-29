@@ -6,6 +6,7 @@ import * as handlers from './handlers'
 
 
 const v1Router = new Router()
+  .get('/session', handlers.checkSession)
   .post('/session', handlers.createSession)
   .del('/session', handlers.delSession)
   .post('/cases', handlers.openCase)

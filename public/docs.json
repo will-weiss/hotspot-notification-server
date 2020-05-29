@@ -17,6 +17,24 @@
   "schemes": ["https", "http"],
   "paths": {
     "/session": {
+      "get": {
+        "tags": ["session"],
+        "summary": "Checks whether there is an active session",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "username": { "type": "string", "required": true, "example": "contact_tracer_1" },
+              "role": { "type": "string", "required": true, "example": "contact_tracer" }
+            }
+          }
+        }
+      },
       "post": {
         "tags": ["session"],
         "summary": "Login, starts a session",

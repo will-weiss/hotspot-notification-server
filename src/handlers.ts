@@ -1,4 +1,5 @@
 import { IRouterContext } from 'koa-router'
+import { omit } from 'lodash'
 import * as passwords from './passwords'
 import db from './db'
 import * as sessions from './sessions'
@@ -22,6 +23,16 @@ const getPositiveIntegerParam = (ctx: IRouterContext, fieldName: string) => {
   }
 
   return id
+}
+
+export async function checkSession(ctx: IRouterContext): Promise<any> {
+  const { loggedInStaffMember } = ctx as any
+
+  if (!loggedInStaffMember) {
+    return Object.assign(ctx.response, { status: 401 })
+  } else {
+    return Object.assign(ctx.response, { status: 200, body: omit(loggedInStaffMember, 'id') })
+  }
 }
 
 export async function createSession(ctx: IRouterContext): Promise<any> {
