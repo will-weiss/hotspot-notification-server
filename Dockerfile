@@ -23,4 +23,4 @@ RUN npm run compile
 # RUN npm test
 # RUN npm prune production
 
-CMD ["node", "compiled/entry.js"]
+CMD ["node", "compiled-server/entry.js"]

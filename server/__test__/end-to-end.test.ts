@@ -2,9 +2,9 @@
 // tslint:disable:no-expression-statement
 import { expect } from 'chai'
 import * as request from 'supertest'
-import * as permissions from '../server/permissions'
-import db from '../server/db'
-import server from '../server/server'
+import * as permissions from '../permissions'
+import db from '../db'
+import server from '../server'
 const { seed } = require('../../db/seeds/two_role_three_user')
 
 

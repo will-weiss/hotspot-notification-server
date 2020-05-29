@@ -3,7 +3,7 @@
 node_modules/
 npm-debug.log
 tmp/
-compiled/
+compiled-server/
 sessions/
 events/
 projections/

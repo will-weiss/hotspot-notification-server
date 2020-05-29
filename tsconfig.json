@@ -6,7 +6,7 @@
     "jsx": "react",
     "module": "commonjs",
     "noImplicitAny": true,
-    "outDir": "compiled",
+    "outDir": "compiled-server",
     "skipLibCheck": true,
     "sourceMap": true,
     "strictNullChecks": true,

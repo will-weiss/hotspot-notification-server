@@ -1,5 +1,5 @@
 const { first } = require('lodash')
-const passwords = require('../../compiled/server/passwords')
+const passwords = require('../../compiled-server/passwords')
 
 
 exports.seed = async db => {

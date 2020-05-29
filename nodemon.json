@@ -2,7 +2,7 @@
   "restartable": "rs",
   "verbose": true,
   "watch": [
-    "compiled/",
+    "compiled-server/",
     "public/",
     "views/"
   ],

@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, fstat } from 'fs'
 import { join } from 'path'
 
 
-const viewsDir = join(__dirname, '..', '..', 'views')
+const viewsDir = join(__dirname, '..', 'views')
 const partialsDir = join(viewsDir, 'partials')
 
 const partials = readdirSync(partialsDir)
